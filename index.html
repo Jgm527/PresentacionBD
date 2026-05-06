@@ -1,43 +1,709 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-		/>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Atlantic Airlines — BBDD</title>
+  <link rel="stylesheet" href="dist/reset.css" />
+  <link rel="stylesheet" href="dist/reveal.css" />
+  <link rel="stylesheet" href="dist/theme/black.css" />
+  <link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+  <style>
+    :root {
+      --bg:          #060d1a;
+      --surface:     #0f1e33;
+      --surface-2:   #152437;
+      --border:      rgba(96,165,250,.15);
+      --blue:        #3b82f6;
+      --blue-l:      #60a5fa;
+      --blue-dim:    rgba(59,130,246,.18);
+      --green:       #10b981;
+      --green-l:     #34d399;
+      --green-dim:   rgba(16,185,129,.18);
+      --amber:       #f59e0b;
+      --amber-l:     #fbbf24;
+      --amber-dim:   rgba(245,158,11,.15);
+      --purple:      #a855f7;
+      --purple-l:    #d8b4fe;
+      --purple-dim:  rgba(168,85,247,.14);
+      --text:        #f1f5f9;
+      --muted:       #94a3b8;
+      --r:           12px;
+      --rs:          8px;
+    }
 
-		<title>reveal.js</title>
+    /* ── Reveal base ─────────────────────────────── */
+    .reveal-viewport { background: var(--bg); }
+    .reveal .slides  { font-family: 'Inter', system-ui, sans-serif; color: var(--text); }
+    .reveal h1,.reveal h2,.reveal h3 {
+      color: var(--text); text-transform: none;
+      letter-spacing: -.025em; margin: 0; font-weight: 800;
+    }
+    .reveal .slides section {
+      height: 100%; display: flex !important; flex-direction: column;
+      box-sizing: border-box; padding: 30px 44px;
+      text-align: left; gap: 12px;
+    }
+    .reveal .progress { background: rgba(59,130,246,.15); }
+    .reveal .progress span { background: var(--blue); }
+    .reveal code {
+      font-family: 'JetBrains Mono','Fira Code',monospace;
+      background: rgba(255,255,255,.09); padding: 2px 6px;
+      border-radius: 4px; font-size: .88em; color: var(--blue-l);
+    }
 
-		<link rel="stylesheet" href="dist/reset.css" />
-		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/black.css" />
+    /* ── Chips ───────────────────────────────────── */
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip  {
+      font-size: .74rem; font-weight: 600; padding: 4px 11px;
+      border-radius: 999px; border: 1px solid var(--border);
+      color: var(--muted); background: rgba(255,255,255,.04);
+    }
+    .chip.b { background: var(--blue-dim);   border-color: rgba(59,130,246,.4);  color: var(--blue-l);   }
+    .chip.g { background: var(--green-dim);  border-color: rgba(16,185,129,.38); color: var(--green-l);  }
+    .chip.a { background: var(--amber-dim);  border-color: rgba(245,158,11,.38); color: var(--amber-l);  }
+    .chip.p { background: var(--purple-dim); border-color: rgba(168,85,247,.4);  color: var(--purple-l); }
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+    /* ── Cards / Bento ───────────────────────────── */
+    .bento { display: grid; gap: 12px; flex: 1; min-height: 0; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 1.4rem 1.6rem;
+      display: flex; flex-direction: column; gap: .55rem;
+      overflow: hidden; min-height: 0;
+    }
+    .card.blue  { border-color: rgba(59,130,246,.4);  background: linear-gradient(135deg,#0c1e3a,#0e2446); }
+    .card.green { border-color: rgba(16,185,129,.38); }
+    .card.amber { border-color: rgba(245,158,11,.35); }
 
-		<script src="dist/reveal.js"></script>
-		<script src="dist/plugin/notes.js"></script>
-		<script src="dist/plugin/markdown.js"></script>
-		<script src="dist/plugin/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+    .lbl  { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .ttl  { font-size: 1.3rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .bod  { font-size: .9rem;  color: var(--muted); line-height: 1.6; }
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
-			});
-		</script>
-	</body>
+    /* Stats */
+    .snum { font-size: 3.2rem; font-weight: 800; color: var(--blue-l); line-height: 1; }
+    .slbl { font-size: .8rem;  color: var(--muted); margin-top: 4px; }
+
+    /* Checklist */
+    .cl { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .5rem; }
+    .cl li { display: flex; gap: 8px; font-size: .88rem; color: var(--muted); align-items: flex-start; }
+    .cl li::before { content: '→'; color: var(--blue-l); font-weight: 700; flex-shrink: 0; }
+
+    /* ── Cover ───────────────────────────────────── */
+    .c-tag   { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue-l); opacity: .75; }
+    .c-title { font-size: 4.4rem; font-weight: 900; line-height: .9; letter-spacing: -.04em; color: var(--text); }
+    .c-title span { color: var(--blue-l); }
+    .c-sub   { font-size: .98rem; color: var(--muted); max-width: 480px; line-height: 1.65; }
+
+    /* ── Architecture diagram (slide 3) ─────────── */
+    .arch { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+
+    .layer {
+      flex: 1; display: flex; flex-direction: column; gap: 7px;
+      background: rgba(255,255,255,.02); border-radius: var(--rs);
+      border: 1px solid rgba(255,255,255,.045); padding: 10px 14px;
+      min-height: 0;
+    }
+    .layer-hdr { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .layer-tag { font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0; }
+    .layer-tag.i { color: var(--green-l); }
+    .layer-tag.c { color: var(--blue-l);  }
+    .layer-tag.p { color: var(--amber-l); }
+    .layer-line  { flex: 1; height: 1px; background: rgba(255,255,255,.06); }
+
+    .nodes { display: flex; align-items: center; gap: 9px; flex: 1; }
+
+    .nd {
+      display: flex; flex-direction: column; gap: 3px;
+      background: var(--surface-2); border-radius: var(--rs);
+      padding: 9px 14px; border: 1.5px solid var(--border); flex-shrink: 0;
+    }
+    .nd b    { font-size: .84rem; font-weight: 700; color: var(--text); }
+    .nd small{ font-size: .62rem; color: var(--muted); line-height: 1.4; }
+    .nd .gen { font-size: .6rem; color: var(--green-l); margin-top: 2px; }
+    .nd .nul { font-size: .6rem; color: var(--amber-l); }
+
+    .nd.i  { border-color: rgba(16,185,129,.45); }
+    .nd.c  { border-color: rgba(59,130,246,.55); background: linear-gradient(135deg,#0c1d3a,#0e2446); }
+    .nd.cb { border-color: rgba(59,130,246,.75); background: linear-gradient(135deg,#0b1c38,#0d2550); padding: 12px 18px; }
+    .nd.cb b { font-size: 1rem; color: var(--blue-l); }
+    .nd.p  { border-color: rgba(245,158,11,.45); }
+    .nd.br { border-color: rgba(168,85,247,.5); background: var(--purple-dim); }
+
+    .arr  { font-size: 1.1rem; color: rgba(148,163,184,.4); flex-shrink: 0; }
+    .sp   { flex: 1; }
+    .div  { width: 1px; height: 100%; background: rgba(255,255,255,.06); flex-shrink: 0; }
+
+    /* ── Table detail cards (slides 4–5) ─────────── */
+    .tgrid { flex: 1; display: grid; gap: 10px; min-height: 0; }
+
+    .tc {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--r); padding: 1rem 1.2rem;
+      display: flex; flex-direction: column; gap: 5px;
+      overflow: hidden; min-height: 0;
+    }
+    .tc.i  { border-color: rgba(16,185,129,.42); }
+    .tc.c  { border-color: rgba(59,130,246,.52); background: linear-gradient(135deg,#0c1d3a,#0f2347); }
+    .tc.p  { border-color: rgba(245,158,11,.4);  }
+    .tc.br { border-color: rgba(168,85,247,.45); background: var(--purple-dim); }
+
+    .tn    { font-size: .94rem; font-weight: 700; }
+    .tn.i  { color: var(--green-l); }
+    .tn.c  { color: var(--blue-l);  }
+    .tn.p  { color: var(--amber-l); }
+    .tn.br { color: var(--purple-l); }
+
+    .tf { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+    .f  { font-size: .74rem; color: var(--muted); font-family: monospace; line-height: 1.45; }
+    .f.pk  { color: var(--blue-l);   font-weight: 700; }
+    .f.fk  { color: #a78bfa; }
+    .f.gen { color: var(--green-l);  }
+    .f.nt  { font-size: .64rem; color: rgba(148,163,184,.55); margin-top: 3px; }
+
+    /* breadcrumb */
+    .bc { font-size: .68rem; color: var(--muted); letter-spacing: .06em; }
+    .bc span { color: var(--blue-l); font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════
+     1 · PORTADA
+═══════════════════════════════════════════ -->
+<section>
+  <div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
+    <div class="c-tag">Proyecto BBDD · DAW 25–26</div>
+
+    <div>
+      <div class="c-title">Atlantic<br><span>Airlines</span></div>
+      <div class="c-sub" style="margin-top:1.1rem">
+        Base de datos para la gestión completa de una aerolínea europea —
+        flotas, rutas, tripulaciones y pasajeros.
+      </div>
+    </div>
+
+    <div style="display:flex;gap:2.5rem;align-items:center">
+      <div>
+        <div style="font-weight:700;color:var(--text);font-size:.96rem">Javier García</div>
+        <div style="font-size:.76rem;color:var(--blue-l)">github.com/jgm527</div>
+      </div>
+      <div>
+        <div style="font-weight:700;color:var(--text);font-size:.96rem">Enrique Alonso</div>
+        <div style="font-size:.76rem;color:var(--blue-l)">github.com/acenriquealonso</div>
+      </div>
+      <div style="margin-left:auto">
+        <div class="chips">
+          <span class="chip b">PostgreSQL</span>
+          <span class="chip">PL/pgSQL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     2 · CONTEXTO
+═══════════════════════════════════════════ -->
+<section>
+  <div class="bento" style="grid-template-columns:1.6fr 1fr;grid-template-rows:1fr 1fr">
+
+    <div class="card blue" style="grid-row:1/3">
+      <div class="lbl">El encargo</div>
+      <div class="ttl" style="font-size:1.65rem;margin-top:.3rem">
+        Una aerolínea europea nos pide rehacer su BBDD desde cero.
+      </div>
+      <div class="bod" style="margin-top:.5rem">
+        Los requisitos llegan de forma incremental, como en un proyecto real.
+        Cada entrega amplía el modelo sin romper lo anterior.
+        El sistema gestiona flotas, vuelos, tripulaciones y billetes.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Alcance técnico</div>
+      <div class="chips" style="margin-top:6px">
+        <span class="chip g">DDL</span>
+        <span class="chip g">DML</span>
+        <span class="chip g">Consultas</span>
+        <span class="chip g">Triggers</span>
+        <span class="chip g">Funciones</span>
+        <span class="chip g">Procedimientos</span>
+        <span class="chip g">Vistas</span>
+        <span class="chip g">Transacciones</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">El modelo</div>
+      <div style="display:flex;gap:2rem;margin-top:8px;align-items:flex-end">
+        <div><div class="snum">11</div><div class="slbl">tablas</div></div>
+        <div><div class="snum">6</div><div class="slbl">enums</div></div>
+        <div><div class="snum">2</div><div class="slbl">jerarquías</div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     3 · MODELO — ARQUITECTURA GENERAL
+═══════════════════════════════════════════ -->
+<section>
+  <div style="display:flex;gap:14px;align-items:center;flex-shrink:0">
+    <h3 style="font-size:1.2rem">Modelo relacional</h3>
+    <div class="bc">Slide <span>1 / 3</span> — visión general</div>
+    <div class="chips" style="margin-left:auto">
+      <span class="chip g">Infraestructura</span>
+      <span class="chip b">Núcleo</span>
+      <span class="chip a">Personas</span>
+      <span class="chip p">Puente N:N</span>
+    </div>
+  </div>
+
+  <div class="arch">
+
+    <!-- CAPA 1: Infraestructura -->
+    <div class="layer">
+      <div class="layer-hdr">
+        <span class="layer-tag i">Infraestructura</span>
+        <div class="layer-line"></div>
+      </div>
+      <div class="nodes">
+        <div class="nd i">
+          <b>modelos</b>
+          <small>Airbus · Boeing · Embraer<br>COMAC · Bombardier</small>
+        </div>
+        <span class="arr">→</span>
+        <div class="nd i">
+          <b>aviones</b>
+          <small>MSN único · matrícula<br>estado · leasing · revisiones</small>
+        </div>
+        <div class="sp"></div>
+        <div class="div"></div>
+        <div class="sp"></div>
+        <div class="nd i">
+          <b>aeropuertos</b>
+          <small>IATA / ICAO · ciudad<br>coordenadas POINT · tipo</small>
+        </div>
+        <span class="arr">→</span>
+        <div class="nd i">
+          <b>rutas</b>
+          <small>origen → destino<br>duración estimada</small>
+        </div>
+        <div class="sp"></div>
+        <div class="div"></div>
+        <div class="sp"></div>
+        <div class="nd i" style="border-style:dashed;opacity:.85">
+          <b>aerolineas</b>
+          <small>IATA · ICAO · hub principal<br>↺ aerolínea padre</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPA 2: Núcleo operacional -->
+    <div class="layer" style="border-color:rgba(59,130,246,.12)">
+      <div class="layer-hdr">
+        <span class="layer-tag c">Núcleo operacional</span>
+        <div class="layer-line" style="background:rgba(59,130,246,.15)"></div>
+      </div>
+      <div class="nodes">
+        <div class="nd cb">
+          <b>VUELOS ✈</b>
+          <small>fecha_salida TIMESTAMP<br>○ fecha_llegada TIMESTAMP</small>
+          <div class="gen">duracion_real ⚡ GENERATED ALWAYS AS (llegada − salida) STORED</div>
+          <div class="nul">idavion nullable → ON DELETE SET NULL</div>
+        </div>
+        <span class="arr">→</span>
+        <div class="nd c">
+          <b>billetes</b>
+          <small>clase · precio MONEY<br>asiento · estado (10 estados)<br>DEFAULT 'CREADO' · CHECK precio &gt; 0</small>
+        </div>
+        <span class="arr">→</span>
+        <div class="nd p">
+          <b>clientes</b>
+          <small>nombre · apellidos<br>dni UNIQUE · ○ pasaporte</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPA 3: Personal -->
+    <div class="layer">
+      <div class="layer-hdr">
+        <span class="layer-tag p">Personal</span>
+        <div class="layer-line"></div>
+      </div>
+      <div class="nodes">
+        <div class="nd p">
+          <b>empleados</b>
+          <small>cuenta_bancaria · nuss<br>fecha_contratacion · formacion</small>
+        </div>
+        <span class="arr">↗</span>
+        <div class="nd p" style="border-style:dashed">
+          <b>empleados_aire</b>
+          <small>Herencia JOINED ↑ empleados<br>puesto · licencia · horas_vuelo</small>
+        </div>
+        <span class="arr">→</span>
+        <div class="nd br">
+          <b>tripulaciones</b>
+          <small>PK+FK idvuelo<br>PK+FK idempleado<br>N:N vuelos ↔ empleados_aire</small>
+        </div>
+        <span class="arr" style="font-size:.9rem;color:rgba(59,130,246,.5)">↗ VUELOS</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     4 · MODELO — INFRAESTRUCTURA
+═══════════════════════════════════════════ -->
+<section>
+  <div style="display:flex;gap:14px;align-items:center;flex-shrink:0">
+    <h3 style="font-size:1.2rem">Modelo relacional · Infraestructura</h3>
+    <div class="bc">Slide <span>2 / 3</span></div>
+  </div>
+
+  <div class="tgrid" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr">
+
+    <div class="tc i">
+      <div class="tn i">modelos</div>
+      <div class="tf">
+        <div class="f pk">PK  idmodelo</div>
+        <div class="f">    nombre · fabricante (enum Airbus · Boeing · Embraer · COMAC · Bombardier)</div>
+        <div class="f">    alcance · asientos · tripulacion_maxima</div>
+        <div class="f">    peso_max_despegue · año_introduccion</div>
+        <div class="f">    motor · ○ nota_tecnica TEXT</div>
+      </div>
+    </div>
+
+    <div class="tc i">
+      <div class="tn i">aeropuertos</div>
+      <div class="tf">
+        <div class="f pk">PK  idaeropuerto</div>
+        <div class="f">    nombre</div>
+        <div class="f">    codigo_iata CHAR(3) UNIQUE · codigo_icao CHAR(4) UNIQUE</div>
+        <div class="f">    ciudad · pais</div>
+        <div class="f">    coordenadas POINT · zona_horaria</div>
+        <div class="f">    ○ capacidad · tipo (REGIONAL / NACIONAL / INTERNACIONAL)</div>
+      </div>
+    </div>
+
+    <div class="tc i">
+      <div class="tn i">aerolineas</div>
+      <div class="tf">
+        <div class="f pk">PK  idaerolinea</div>
+        <div class="f">    nombre · codigo_iata · codigo_icao</div>
+        <div class="f">    pais_origen · fecha_fundacion</div>
+        <div class="f fk">FK  hubprincipal → aeropuertos</div>
+        <div class="f fk">FK  ○ aerolineapadre → aerolineas  (autorreferencia)</div>
+        <div class="f nt">Una aerolínea puede ser filial de otra del mismo grupo.</div>
+      </div>
+    </div>
+
+    <div class="tc i">
+      <div class="tn i">rutas</div>
+      <div class="tf">
+        <div class="f pk">PK  idruta</div>
+        <div class="f fk">FK  idorigen  → aeropuertos</div>
+        <div class="f fk">FK  iddestino → aeropuertos</div>
+        <div class="f fk">FK  idaerolinea</div>
+        <div class="f">    nombre · duracion_estimada NUMERIC</div>
+        <div class="f">    ○ descripcion TEXT</div>
+        <div class="f nt">Una ruta puede existir sin vuelos asignados.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     5 · MODELO — CORE Y PERSONAS
+═══════════════════════════════════════════ -->
+<section>
+  <div style="display:flex;gap:14px;align-items:center;flex-shrink:0">
+    <h3 style="font-size:1.2rem">Modelo relacional · Core y personas</h3>
+    <div class="bc">Slide <span>3 / 3</span></div>
+  </div>
+
+  <div class="tgrid" style="grid-template-columns:1fr 1.4fr 1fr;grid-template-rows:1fr 1fr auto">
+
+    <div class="tc c">
+      <div class="tn c">aviones</div>
+      <div class="tf">
+        <div class="f pk">PK  idavion</div>
+        <div class="f">    msn VARCHAR(20) · matricula</div>
+        <div class="f">    leasing BOOLEAN</div>
+        <div class="f fk">FK  idmodelo · FK idaerolinea</div>
+        <div class="f fk">FK  baseasignada → aeropuertos</div>
+        <div class="f">    estado (ACTIVO / EN MANTENIMIENTO / RETIRADO / ALMACENADO)</div>
+        <div class="f">    tipo_revision (A/B/C/D-CHECK)</div>
+      </div>
+    </div>
+
+    <div class="tc c" style="grid-row:1/3">
+      <div class="tn c">vuelos ✈ — entidad central</div>
+      <div class="tf">
+        <div class="f pk">PK  idvuelo</div>
+        <div class="f fk">FK  idaerolinea</div>
+        <div class="f fk">FK  idruta</div>
+        <div class="f fk">FK  ○ idavion  (nullable)</div>
+        <div class="f">    fecha_salida TIMESTAMP NOT NULL</div>
+        <div class="f">    ○ fecha_llegada TIMESTAMP</div>
+        <div class="f gen">    duracion_real INTERVAL</div>
+        <div class="f gen">    GENERATED ALWAYS AS</div>
+        <div class="f gen">    (fecha_llegada − fecha_salida) STORED</div>
+        <div class="f" style="margin-top:6px">    estado:</div>
+        <div class="f">    PROGRAMADO · RETRASADO · EN RUTA</div>
+        <div class="f">    CANCELADO · DESVIADO · FINALIZADO</div>
+        <div class="f nt">Si el avión se da de baja, idavion → NULL.<br>El historial de vuelos se conserva.</div>
+      </div>
+    </div>
+
+    <div class="tc c">
+      <div class="tn c">billetes</div>
+      <div class="tf">
+        <div class="f pk">PK  idbillete</div>
+        <div class="f fk">FK  idcliente · FK idvuelo</div>
+        <div class="f">    clase (TURISTA / BUSINESS / FIRST-CLASS)</div>
+        <div class="f">    asiento VARCHAR(5)</div>
+        <div class="f">    equipaje_facturado NUMERIC</div>
+        <div class="f">    precio MONEY  CHECK (&gt; 0)</div>
+        <div class="f">    estado (10 estados) DEFAULT 'CREADO'</div>
+      </div>
+    </div>
+
+    <div class="tc p">
+      <div class="tn p">clientes</div>
+      <div class="tf">
+        <div class="f pk">PK  idcliente</div>
+        <div class="f">    nombre · apellidos · telefono · email</div>
+        <div class="f">    fecha_nacimiento</div>
+        <div class="f">    dni VARCHAR(18) UNIQUE</div>
+        <div class="f">    ○ pasaporte VARCHAR(10)</div>
+        <div class="f nt">TABLE_PER_CLASS: hereda de 'persona' (tabla eliminada).</div>
+      </div>
+    </div>
+
+    <div class="tc p">
+      <div class="tn p">empleados  +  empleados_aire</div>
+      <div class="tf">
+        <div class="f pk">PK  idempleado (empleados)</div>
+        <div class="f fk">FK  idaerolinea</div>
+        <div class="f">    nombre · apellidos · telefono · email</div>
+        <div class="f">    cuenta_bancaria · nuss · formacion</div>
+        <div class="f nt">TABLE_PER_CLASS desde 'persona'.</div>
+        <div class="f" style="color:var(--amber-l);margin-top:4px">empleados_aire — Herencia JOINED:</div>
+        <div class="f pk" style="color:var(--purple-l)">PK+FK  idempleado  ON DELETE CASCADE</div>
+        <div class="f">    puesto · licencia · horas_minimas · horas_vuelo</div>
+      </div>
+    </div>
+
+    <div class="tc br" style="grid-column:1/4">
+      <div class="tn br">tripulaciones — tabla puente N:N</div>
+      <div style="display:flex;gap:2rem;align-items:center;margin-top:4px">
+        <div class="tf">
+          <div class="f pk">PK + FK  idvuelo → vuelos</div>
+          <div class="f pk">PK + FK  idempleado → empleados_aire</div>
+        </div>
+        <div class="f" style="color:var(--muted);font-size:.8rem;max-width:460px">
+          Resuelve la relación N:N entre vuelos y empleados_aire.
+          Un vuelo tiene múltiples tripulantes; un empleado de aire puede tripular múltiples vuelos.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     6 · DECISIONES DE DISEÑO
+═══════════════════════════════════════════ -->
+<section>
+  <h3 style="font-size:1.2rem;flex-shrink:0">Decisiones de diseño</h3>
+
+  <div class="bento" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr">
+
+    <div class="card">
+      <div class="lbl">Herencia 1 · Personas</div>
+      <div class="ttl">TABLE_PER_CLASS</div>
+      <div class="bod">
+        La tabla <code>persona</code> desaparece del modelo relacional.
+        Sus atributos se replican directamente en <code>clientes</code>
+        y <code>empleados</code>. Sin JOINs de herencia, sin tabla padre.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Herencia 2 · Personal de vuelo</div>
+      <div class="ttl">JOINED</div>
+      <div class="bod">
+        <code>empleados_aire</code> usa la PK de <code>empleados</code>
+        como FK y PK a la vez. <code>ON DELETE CASCADE</code> mantiene
+        la integridad. Sin datos redundantes aunque la especialización sea total.
+      </div>
+    </div>
+
+    <div class="card blue">
+      <div class="lbl">Columna calculada persistida</div>
+      <div class="ttl" style="font-size:1.05rem;font-family:monospace">
+        duracion_real GENERATED ALWAYS AS<br>(fecha_llegada − fecha_salida) STORED
+      </div>
+      <div class="bod" style="margin-top:.4rem">
+        La BD calcula y persiste la duración automáticamente.
+        No puede desincronizarse. No requiere lógica de aplicación.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Integridad histórica</div>
+      <div class="ttl">ON DELETE SET NULL</div>
+      <div class="bod">
+        Cuando un avión se retira, <code>idavion</code> en sus vuelos
+        pasa a <code>NULL</code>. El historial queda intacto para
+        auditorías y reportes, sin borrar registros operativos.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     7 · LO MÁS INTERESANTE
+═══════════════════════════════════════════ -->
+<section>
+  <h3 style="font-size:1.2rem;flex-shrink:0">Lo más interesante del proyecto</h3>
+
+  <div class="bento" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr">
+
+    <div class="card blue" style="grid-row:1/3">
+      <div class="lbl">PL/pgSQL · Triggers</div>
+      <div class="ttl" style="font-size:1.1rem">Lógica en la base de datos</div>
+      <ul class="cl" style="margin-top:.7rem">
+        <li>
+          Al finalizar un vuelo, el trigger acumula automáticamente
+          las horas de vuelo de cada tripulante que participó.
+        </li>
+        <li>
+          Al cancelar un vuelo, todos sus billetes pasan a estado
+          <code>CANCELADO</code> — sin intervención de la aplicación.
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Funciones PL/pgSQL</div>
+      <div class="ttl" style="font-size:1.05rem">Informes parametrizados</div>
+      <div class="bod">
+        <code>informe_cliente(dni)</code><br>
+        Historial de rutas + gasto total acumulado.<br><br>
+        <code>conectividad_aeropuerto(id)</code><br>
+        Evalúa conectividad según tipo de aeropuerto.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Consulta · Window Function</div>
+      <div class="ttl" style="font-size:1.05rem">NTILE(4)</div>
+      <div class="bod">
+        Clasifica vuelos en cuartiles de duración por aerolínea
+        (cortos / medios / largos / muy largos).
+        Partición por <code>idaerolinea</code>, sin RANK.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Transacciones multi-usuario</div>
+      <div class="ttl" style="font-size:1.05rem">Bloqueos reales</div>
+      <div class="bod">
+        <code>SELECT FOR UPDATE / SHARE</code> para control de concurrencia.
+        Bloqueo compartido en auditorías simultáneas.
+        Bloqueo exclusivo para modificaciones de modelos.
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="lbl">Vistas + Procedimiento</div>
+      <div class="chips" style="margin-top:5px">
+        <span class="chip g">Vista auditoría empleados</span>
+        <span class="chip g">Vista auditoría aviones</span>
+        <span class="chip g">reasignarEmpleadosAerolinea()</span>
+      </div>
+      <div class="bod" style="margin-top:.5rem">
+        Transfiere en bloque toda la plantilla de una aerolínea a otra.
+        Útil en fusiones o adquisiciones del grupo.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     8 · CIERRE
+═══════════════════════════════════════════ -->
+<section>
+  <div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
+
+    <div>
+      <div class="c-tag">Conclusión</div>
+      <h2 style="font-size:2.3rem;margin-top:.5rem;letter-spacing:-.03em;line-height:1.1">
+        Un modelo sólido,<br>automatizado y realista.
+      </h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      <div class="card"><div class="snum">11</div><div class="slbl">tablas relacionales</div></div>
+      <div class="card"><div class="snum">2</div><div class="slbl">estrategias de herencia</div></div>
+      <div class="card"><div class="snum">6</div><div class="slbl">enums de dominio</div></div>
+      <div class="card blue"><div class="snum">5+</div><div class="slbl">automatismos PL/pgSQL</div></div>
+    </div>
+
+    <div class="card" style="flex:0">
+      <div class="lbl">Equipo</div>
+      <div style="display:flex;gap:3rem;margin-top:6px;align-items:center">
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:1rem">Javier García</div>
+          <div style="font-size:.78rem;color:var(--blue-l)">github.com/jgm527</div>
+        </div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:1rem">Enrique Alonso</div>
+          <div style="font-size:.78rem;color:var(--blue-l)">github.com/acenriquealonso</div>
+        </div>
+        <div style="margin-left:auto">
+          <div class="chips">
+            <span class="chip b">PostgreSQL</span>
+            <span class="chip">DAW 25–26</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+<script src="dist/reveal.js"></script>
+<script src="dist/plugin/notes.js"></script>
+<script src="dist/plugin/highlight.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    transition: 'fade',
+    transitionSpeed: 'fast',
+    backgroundTransition: 'fade',
+    progress: true,
+    controls: true,
+    controlsLayout: 'bottom-right',
+    width: 1280,
+    height: 720,
+    margin: 0,
+    minScale: 0.2,
+    maxScale: 2.0,
+    plugins: [RevealHighlight, RevealNotes],
+  });
+</script>
+</body>
 </html>
