@@ -1,709 +1,1121 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Atlantic Airlines — BBDD</title>
-  <link rel="stylesheet" href="dist/reset.css" />
-  <link rel="stylesheet" href="dist/reveal.css" />
-  <link rel="stylesheet" href="dist/theme/black.css" />
-  <link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
-  <style>
-    :root {
-      --bg:          #060d1a;
-      --surface:     #0f1e33;
-      --surface-2:   #152437;
-      --border:      rgba(96,165,250,.15);
-      --blue:        #3b82f6;
-      --blue-l:      #60a5fa;
-      --blue-dim:    rgba(59,130,246,.18);
-      --green:       #10b981;
-      --green-l:     #34d399;
-      --green-dim:   rgba(16,185,129,.18);
-      --amber:       #f59e0b;
-      --amber-l:     #fbbf24;
-      --amber-dim:   rgba(245,158,11,.15);
-      --purple:      #a855f7;
-      --purple-l:    #d8b4fe;
-      --purple-dim:  rgba(168,85,247,.14);
-      --text:        #f1f5f9;
-      --muted:       #94a3b8;
-      --r:           12px;
-      --rs:          8px;
-    }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Atlantic Airlines · BBDD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Mono:wght@400;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" id="hljs-theme-dark" href="dist/plugin/highlight/monokai.css" />
+    <link rel="stylesheet" id="hljs-theme-light"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" disabled />
 
-    /* ── Reveal base ─────────────────────────────── */
-    .reveal-viewport { background: var(--bg); }
-    .reveal .slides  { font-family: 'Inter', system-ui, sans-serif; color: var(--text); }
-    .reveal h1,.reveal h2,.reveal h3 {
-      color: var(--text); text-transform: none;
-      letter-spacing: -.025em; margin: 0; font-weight: 800;
-    }
-    .reveal .slides section {
-      height: 100%; display: flex !important; flex-direction: column;
-      box-sizing: border-box; padding: 30px 44px;
-      text-align: left; gap: 12px;
-    }
-    .reveal .progress { background: rgba(59,130,246,.15); }
-    .reveal .progress span { background: var(--blue); }
-    .reveal code {
-      font-family: 'JetBrains Mono','Fira Code',monospace;
-      background: rgba(255,255,255,.09); padding: 2px 6px;
-      border-radius: 4px; font-size: .88em; color: var(--blue-l);
-    }
+    <style>
+        /* ============================================================
+           CSS VARIABLES — LIGHT (GREEN NEUMORPHISM)
+           ============================================================ */
+        :root,
+        [data-theme="light"] {
+            --bg: #cfd9cb;
+            --neu-shadow-dark: #adb6a9;
+            --neu-shadow-light: #f1ffe3;
+            --card-bg: #cfd9cb;
+            --text-primary: #243328;
+            --text-secondary: #4a6b53;
+            --accent: #3d7a52;
+            --accent-glow: rgba(61, 122, 82, 0.25);
+            --toggle-sun: #f5a623;
+            --toggle-moon: #b0c4d8;
+            --clock-digit: #2c4a34;
+            --clock-sep: #4a7c59;
+            --border-radius: 18px;
+            --transition: 380ms cubic-bezier(.4, 0, .2, 1);
+        }
 
-    /* ── Chips ───────────────────────────────────── */
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip  {
-      font-size: .74rem; font-weight: 600; padding: 4px 11px;
-      border-radius: 999px; border: 1px solid var(--border);
-      color: var(--muted); background: rgba(255,255,255,.04);
-    }
-    .chip.b { background: var(--blue-dim);   border-color: rgba(59,130,246,.4);  color: var(--blue-l);   }
-    .chip.g { background: var(--green-dim);  border-color: rgba(16,185,129,.38); color: var(--green-l);  }
-    .chip.a { background: var(--amber-dim);  border-color: rgba(245,158,11,.38); color: var(--amber-l);  }
-    .chip.p { background: var(--purple-dim); border-color: rgba(168,85,247,.4);  color: var(--purple-l); }
+        /* ============================================================
+           CSS VARIABLES — DARK
+           ============================================================ */
+        [data-theme="dark"] {
+            --bg: #1a2233;
+            --neu-shadow-dark: #111623;
+            --neu-shadow-light: #222e44;
+            --card-bg: #1a2233;
+            --text-primary: #c5d8c8;
+            --text-secondary: #6ea882;
+            --accent: #4ade80;
+            --accent-glow: rgba(74, 222, 128, 0.18);
+            --toggle-sun: #f5a623;
+            --toggle-moon: #7ea8d0;
+            --clock-digit: #7dd5a0;
+            --clock-sep: #4ade80;
+        }
 
-    /* ── Cards / Bento ───────────────────────────── */
-    .bento { display: grid; gap: 12px; flex: 1; min-height: 0; }
-    .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 1.4rem 1.6rem;
-      display: flex; flex-direction: column; gap: .55rem;
-      overflow: hidden; min-height: 0;
-    }
-    .card.blue  { border-color: rgba(59,130,246,.4);  background: linear-gradient(135deg,#0c1e3a,#0e2446); }
-    .card.green { border-color: rgba(16,185,129,.38); }
-    .card.amber { border-color: rgba(245,158,11,.35); }
+        * { box-sizing: border-box; }
 
-    .lbl  { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-    .ttl  { font-size: 1.3rem; font-weight: 700; color: var(--text); line-height: 1.2; }
-    .bod  { font-size: .9rem;  color: var(--muted); line-height: 1.6; }
+        html,
+        body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            transition: background var(--transition);
+        }
 
-    /* Stats */
-    .snum { font-size: 3.2rem; font-weight: 800; color: var(--blue-l); line-height: 1; }
-    .slbl { font-size: .8rem;  color: var(--muted); margin-top: 4px; }
+        /* ============================================================
+           REVEAL CORE OVERRIDES
+           ============================================================ */
+        .reveal {
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            transition: background var(--transition), color var(--transition);
+        }
 
-    /* Checklist */
-    .cl { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .5rem; }
-    .cl li { display: flex; gap: 8px; font-size: .88rem; color: var(--muted); align-items: flex-start; }
-    .cl li::before { content: '→'; color: var(--blue-l); font-weight: 700; flex-shrink: 0; }
+        .reveal .slides { height: 100% !important; }
 
-    /* ── Cover ───────────────────────────────────── */
-    .c-tag   { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue-l); opacity: .75; }
-    .c-title { font-size: 4.4rem; font-weight: 900; line-height: .9; letter-spacing: -.04em; color: var(--text); }
-    .c-title span { color: var(--blue-l); }
-    .c-sub   { font-size: .98rem; color: var(--muted); max-width: 480px; line-height: 1.65; }
+        .reveal section {
+            height: 100% !important;
+            padding: 20px !important;
+            box-sizing: border-box;
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: visible !important;
+            position: relative; z-index: 0;
+        }
 
-    /* ── Architecture diagram (slide 3) ─────────── */
-    .arch { flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        .reveal .controls {
+            bottom: 18px !important; right: 18px !important;
+            color: var(--accent) !important; z-index: 200;
+        }
 
-    .layer {
-      flex: 1; display: flex; flex-direction: column; gap: 7px;
-      background: rgba(255,255,255,.02); border-radius: var(--rs);
-      border: 1px solid rgba(255,255,255,.045); padding: 10px 14px;
-      min-height: 0;
-    }
-    .layer-hdr { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .layer-tag { font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0; }
-    .layer-tag.i { color: var(--green-l); }
-    .layer-tag.c { color: var(--blue-l);  }
-    .layer-tag.p { color: var(--amber-l); }
-    .layer-line  { flex: 1; height: 1px; background: rgba(255,255,255,.06); }
+        .reveal .controls button {
+            color: var(--accent) !important; opacity: 0.55;
+            filter: drop-shadow(0 2px 6px var(--accent-glow));
+            transition: opacity var(--transition), filter var(--transition);
+        }
 
-    .nodes { display: flex; align-items: center; gap: 9px; flex: 1; }
+        .reveal .controls button:hover,
+        .reveal .controls button.enabled {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
 
-    .nd {
-      display: flex; flex-direction: column; gap: 3px;
-      background: var(--surface-2); border-radius: var(--rs);
-      padding: 9px 14px; border: 1.5px solid var(--border); flex-shrink: 0;
-    }
-    .nd b    { font-size: .84rem; font-weight: 700; color: var(--text); }
-    .nd small{ font-size: .62rem; color: var(--muted); line-height: 1.4; }
-    .nd .gen { font-size: .6rem; color: var(--green-l); margin-top: 2px; }
-    .nd .nul { font-size: .6rem; color: var(--amber-l); }
+        .reveal .progress { background: transparent; height: 3px; z-index: 200; }
+        .reveal .progress span {
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent-glow);
+            transition: width 0.8s cubic-bezier(.4, 0, .2, 1);
+        }
 
-    .nd.i  { border-color: rgba(16,185,129,.45); }
-    .nd.c  { border-color: rgba(59,130,246,.55); background: linear-gradient(135deg,#0c1d3a,#0e2446); }
-    .nd.cb { border-color: rgba(59,130,246,.75); background: linear-gradient(135deg,#0b1c38,#0d2550); padding: 12px 18px; }
-    .nd.cb b { font-size: 1rem; color: var(--blue-l); }
-    .nd.p  { border-color: rgba(245,158,11,.45); }
-    .nd.br { border-color: rgba(168,85,247,.5); background: var(--purple-dim); }
+        .reveal .slide-number {
+            background: transparent;
+            font-family: 'Space Mono', monospace; font-size: 0.55rem;
+            color: var(--text-secondary); bottom: 22px; right: 90px;
+            transition: color var(--transition);
+        }
 
-    .arr  { font-size: 1.1rem; color: rgba(148,163,184,.4); flex-shrink: 0; }
-    .sp   { flex: 1; }
-    .div  { width: 1px; height: 100%; background: rgba(255,255,255,.06); flex-shrink: 0; }
+        /* ============================================================
+           NEUMORPHISM HELPERS
+           ============================================================ */
+        .neu-out {
+            background: var(--card-bg);
+            box-shadow:
+                6px 6px 14px var(--neu-shadow-dark),
+                -6px -6px 14px var(--neu-shadow-light);
+            transition: background var(--transition), box-shadow var(--transition);
+        }
 
-    /* ── Table detail cards (slides 4–5) ─────────── */
-    .tgrid { flex: 1; display: grid; gap: 10px; min-height: 0; }
+        .neu-in {
+            background: var(--card-bg);
+            box-shadow:
+                inset 5px 5px 11px var(--neu-shadow-dark),
+                inset -5px -5px 11px var(--neu-shadow-light);
+            transition: background var(--transition), box-shadow var(--transition);
+        }
 
-    .tc {
-      background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: var(--r); padding: 1rem 1.2rem;
-      display: flex; flex-direction: column; gap: 5px;
-      overflow: hidden; min-height: 0;
-    }
-    .tc.i  { border-color: rgba(16,185,129,.42); }
-    .tc.c  { border-color: rgba(59,130,246,.52); background: linear-gradient(135deg,#0c1d3a,#0f2347); }
-    .tc.p  { border-color: rgba(245,158,11,.4);  }
-    .tc.br { border-color: rgba(168,85,247,.45); background: var(--purple-dim); }
+        .neu-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow:
+                8px 8px 18px var(--neu-shadow-dark),
+                -8px -8px 18px var(--neu-shadow-light);
+            padding: 28px 32px;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
 
-    .tn    { font-size: .94rem; font-weight: 700; }
-    .tn.i  { color: var(--green-l); }
-    .tn.c  { color: var(--blue-l);  }
-    .tn.p  { color: var(--amber-l); }
-    .tn.br { color: var(--purple-l); }
+        /* Puzzle corners */
+        .puzzle-tl { border-radius: 50px 18px 18px 18px !important; }
+        .puzzle-tr { border-radius: 18px 50px 18px 18px !important; }
+        .puzzle-bl { border-radius: 18px 18px 18px 50px !important; }
+        .puzzle-br { border-radius: 18px 18px 50px 18px !important; }
 
-    .tf { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
-    .f  { font-size: .74rem; color: var(--muted); font-family: monospace; line-height: 1.45; }
-    .f.pk  { color: var(--blue-l);   font-weight: 700; }
-    .f.fk  { color: #a78bfa; }
-    .f.gen { color: var(--green-l);  }
-    .f.nt  { font-size: .64rem; color: rgba(148,163,184,.55); margin-top: 3px; }
+        /* Corner label */
+        .corner-label {
+            position: absolute;
+            top: 180px; right: 60px; left: auto;
+            padding: 10px 24px;
+            background: var(--card-bg);
+            border-radius: 8px 8px 8px 28px !important;
+            box-shadow: -4px 4px 10px var(--neu-shadow-dark);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.70em; letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            z-index: 15;
+            transition: background var(--transition), box-shadow var(--transition), color var(--transition);
+        }
 
-    /* breadcrumb */
-    .bc { font-size: .68rem; color: var(--muted); letter-spacing: .06em; }
-    .bc span { color: var(--blue-l); font-weight: 600; }
-  </style>
+        /* ============================================================
+           SLIDE CONTENT STYLES
+           ============================================================ */
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            font-family: 'Space Mono', monospace;
+            color: var(--text-primary);
+            transition: color var(--transition);
+        }
+
+        .reveal p,
+        .reveal li {
+            color: var(--text-primary);
+            transition: color var(--transition);
+        }
+
+        .reveal .accent { color: var(--accent); }
+
+        /* Accent line */
+        .accent-line {
+            width: 60px; height: 3px; border-radius: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+            margin: 12px 0;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        /* Float blob */
+        .float-blob {
+            position: absolute; border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow:
+                10px 10px 22px var(--neu-shadow-dark),
+                -10px -10px 22px var(--neu-shadow-light);
+            z-index: 0; pointer-events: none;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        /* Code blocks */
+        .reveal pre {
+            width: 100% !important;
+            background: var(--card-bg) !important;
+            border-radius: 14px;
+            box-shadow:
+                inset 5px 5px 11px var(--neu-shadow-dark),
+                inset -5px -5px 11px var(--neu-shadow-light) !important;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        .reveal pre code {
+            display: block; padding: 1em !important;
+            background: transparent !important;
+            font-family: 'Fira Code', monospace !important;
+            font-size: 0.58em !important; line-height: 1.55 !important;
+            box-shadow: none !important;
+            transition: color var(--transition);
+        }
+
+        [data-theme="light"] .reveal pre code.hljs { color: #24292e !important; }
+        [data-theme="dark"] .reveal pre code.hljs { color: #f8f8f2 !important; }
+
+        /* Stats */
+        .snum {
+            font-size: 2.8rem; font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent); line-height: 1;
+            text-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .slbl {
+            font-size: 0.75rem; color: var(--text-secondary);
+            letter-spacing: 0.06em; text-transform: uppercase;
+            font-family: 'Space Mono', monospace; margin-top: 4px;
+        }
+
+        /* Checklist */
+        .cl {
+            list-style: none; padding: 0; margin: 0;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .cl li {
+            display: flex; gap: 10px; font-size: 1rem;
+            color: var(--text-primary); align-items: flex-start; line-height: 1.4;
+        }
+
+        .cl li::before {
+            content: '\2192'; color: var(--accent); font-weight: 700; flex-shrink: 0;
+        }
+
+        /* Typography helpers */
+        .bod { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.65; }
+
+        .lbl {
+            font-family: 'Space Mono', monospace; font-size: 0.62rem; font-weight: 700;
+            letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+        }
+
+        .ttl { font-size: 1.3rem; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
+
+        /* Decision cards */
+        .decision-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow:
+                7px 7px 16px var(--neu-shadow-dark),
+                -7px -7px 16px var(--neu-shadow-light);
+            padding: 24px 20px;
+            display: flex; flex-direction: column; gap: 10px;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        .decision-icon { font-size: 1.8rem; line-height: 1; }
+
+        .decision-title {
+            font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+        }
+
+        .decision-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* ER diagram box */
+        .er-box {
+            background: #1a1a2e;
+            border-radius: var(--border-radius);
+            padding: 14px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+            display: flex; align-items: center; justify-content: center;
+        }
+        [data-theme="light"] .er-box {
+            background: #ffffff;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .er-box img {
+            max-width: 100%; max-height: 500px;
+            object-fit: contain; display: block;
+        }
+
+        /* ============================================================
+           DIAGRAM MODAL — FULLSCREEN LIGHTBOX + ZOOM
+           ============================================================ */
+        .dm-overlay {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.92);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.28s ease, visibility 0.28s ease;
+        }
+        .dm-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .dm-close {
+            position: fixed; top: 18px; right: 22px; z-index: 1010;
+            background: none; border: none; color: #fff; font-size: 1.6rem;
+            cursor: pointer; opacity: 0.55; transition: opacity 0.2s ease;
+            padding: 8px; line-height: 1;
+        }
+        .dm-close:hover { opacity: 1; }
+
+        .dm-toolbar {
+            position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+            z-index: 1010; display: flex; align-items: center; gap: 8px;
+            background: rgba(30,30,40,0.85); backdrop-filter: blur(10px);
+            border-radius: 40px; padding: 8px 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .dm-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; width: 36px; height: 36px; border-radius: 50%;
+            font-size: 1.1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s ease, border-color 0.2s ease; line-height: 1;
+        }
+        .dm-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.4); }
+
+        .dm-zoom-lbl {
+            color: #ccc; font-family: 'Space Mono', monospace;
+            font-size: 0.72rem; min-width: 48px; text-align: center; user-select: none;
+        }
+
+        .dm-viewport {
+            width: 100vw; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: grab;
+        }
+        .dm-viewport.grabbing { cursor: grabbing; }
+
+        #dm-img {
+            max-width: 95vw; max-height: 92vh; object-fit: contain;
+            transition: transform 0.15s ease-out;
+            user-select: none; pointer-events: none;
+        }
+
+        /* ER box — click hint */
+        .er-box img { cursor: zoom-in; }
+        .er-box img:hover { opacity: 0.92; transition: opacity 0.2s ease; }
+
+        /* Mini reference card */
+        .mini-ref {
+            position: absolute;
+            bottom: 10px; right: 10px; z-index: 20;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 3px 3px 8px var(--neu-shadow-dark),
+                        -2px -2px 6px var(--neu-shadow-light);
+            padding: 4px; cursor: pointer;
+            transition: transform 0.2s ease, box-shadow var(--transition);
+            max-width: 110px; opacity: 0.72;
+        }
+        .mini-ref:hover {
+            transform: scale(1.06); opacity: 1;
+            box-shadow: 5px 5px 12px var(--neu-shadow-dark),
+                        -3px -3px 10px var(--neu-shadow-light);
+        }
+        .mini-ref img {
+            width: 100%; height: auto; display: block;
+            border-radius: 4px;
+        }
+        .mini-ref .mini-label {
+            font-family: 'Space Mono', monospace; font-size: 0.4rem;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            text-align: center; color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ============================================================
+           CLOCK — TOP LEFT
+           ============================================================ */
+        #clock-widget {
+            position: fixed; top: 16px; left: 16px; z-index: 500;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 12px 18px; border-radius: 16px;
+            background: var(--card-bg);
+            box-shadow:
+                6px 6px 14px var(--neu-shadow-dark),
+                -6px -6px 14px var(--neu-shadow-light);
+            user-select: none;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        #clock-time {
+            font-family: 'Space Mono', monospace; font-size: 1.45rem; font-weight: 700;
+            color: var(--clock-digit); letter-spacing: 0.06em; line-height: 1;
+            text-shadow: 0 0 12px var(--accent-glow);
+            transition: color var(--transition), text-shadow var(--transition);
+        }
+
+        #clock-time .sep { color: var(--clock-sep); animation: blink 1s step-end infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+
+        #clock-date {
+            font-family: 'Space Mono', monospace; font-size: 0.52rem;
+            color: var(--text-secondary); letter-spacing: 0.12em; margin-top: 5px;
+            text-transform: uppercase;
+            transition: color var(--transition);
+        }
+
+        #clock-widget::before {
+            content: ''; position: absolute; inset: 4px; border-radius: 13px;
+            box-shadow:
+                inset 2px 2px 5px var(--neu-shadow-dark),
+                inset -2px -2px 5px var(--neu-shadow-light);
+            pointer-events: none;
+            transition: box-shadow var(--transition);
+        }
+
+        /* ============================================================
+           DARK / LIGHT TOGGLE — BOTTOM LEFT
+           ============================================================ */
+        #theme-toggle {
+            position: fixed; bottom: 18px; left: 18px; z-index: 500;
+            display: flex; align-items: center; gap: 10px; user-select: none;
+        }
+
+        #theme-toggle .toggle-label {
+            font-family: 'Space Mono', monospace; font-size: 0.6rem;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--text-secondary); width: 28px; text-align: center;
+            transition: color var(--transition);
+        }
+
+        #toggle-track {
+            position: relative; width: 56px; height: 28px; border-radius: 14px;
+            background: var(--card-bg);
+            box-shadow:
+                inset 3px 3px 7px var(--neu-shadow-dark),
+                inset -3px -3px 7px var(--neu-shadow-light);
+            cursor: pointer;
+            transition: background var(--transition), box-shadow var(--transition);
+            flex-shrink: 0;
+        }
+
+        #toggle-thumb {
+            position: absolute; top: 4px; left: 4px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--card-bg);
+            box-shadow:
+                3px 3px 7px var(--neu-shadow-dark),
+                -3px -3px 7px var(--neu-shadow-light);
+            transition:
+                left var(--transition),
+                background var(--transition),
+                box-shadow var(--transition);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        [data-theme="dark"] #toggle-thumb { left: 32px; }
+
+        #toggle-thumb::after {
+            content: '\2600'; font-size: 0.75rem; color: var(--toggle-sun);
+            transition: content var(--transition), color var(--transition);
+            line-height: 1;
+        }
+
+        [data-theme="dark"] #toggle-thumb::after {
+            content: '\263D'; color: var(--toggle-moon);
+        }
+
+        /* ============================================================
+           CUSTOM SCROLLBARS
+           ============================================================ */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track {
+            background: var(--card-bg); border-radius: 10px;
+            box-shadow:
+                inset 3px 3px 6px var(--neu-shadow-dark),
+                inset -3px -3px 6px var(--neu-shadow-light);
+            margin: 4px;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--card-bg); border-radius: 10px;
+            box-shadow:
+                3px 3px 6px var(--neu-shadow-dark),
+                -3px -3px 6px var(--neu-shadow-light);
+            border: 1px solid transparent; background-clip: padding-box;
+            transition: box-shadow var(--transition), background var(--transition);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            box-shadow:
+                4px 4px 8px var(--neu-shadow-dark),
+                -4px -4px 8px var(--neu-shadow-light);
+            border: 1px solid var(--accent-glow);
+        }
+        ::-webkit-scrollbar-thumb:active {
+            box-shadow:
+                inset 3px 3px 6px var(--neu-shadow-dark),
+                inset -3px -3px 6px var(--neu-shadow-light);
+        }
+        ::-webkit-scrollbar-corner { background: var(--card-bg); }
+    </style>
 </head>
+
 <body>
-<div class="reveal">
-<div class="slides">
 
-<!-- ═══════════════════════════════════════════
-     1 · PORTADA
-═══════════════════════════════════════════ -->
-<section>
-  <div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
-    <div class="c-tag">Proyecto BBDD · DAW 25–26</div>
-
-    <div>
-      <div class="c-title">Atlantic<br><span>Airlines</span></div>
-      <div class="c-sub" style="margin-top:1.1rem">
-        Base de datos para la gestión completa de una aerolínea europea —
-        flotas, rutas, tripulaciones y pasajeros.
-      </div>
-    </div>
-
-    <div style="display:flex;gap:2.5rem;align-items:center">
-      <div>
-        <div style="font-weight:700;color:var(--text);font-size:.96rem">Javier García</div>
-        <div style="font-size:.76rem;color:var(--blue-l)">github.com/jgm527</div>
-      </div>
-      <div>
-        <div style="font-weight:700;color:var(--text);font-size:.96rem">Enrique Alonso</div>
-        <div style="font-size:.76rem;color:var(--blue-l)">github.com/acenriquealonso</div>
-      </div>
-      <div style="margin-left:auto">
-        <div class="chips">
-          <span class="chip b">PostgreSQL</span>
-          <span class="chip">PL/pgSQL</span>
+    <!-- CLOCK -->
+    <div id="clock-widget" aria-label="Reloj">
+        <div id="clock-time">
+            <span id="ch">00</span><span class="sep">:</span><span id="cm">00</span><span class="sep">:</span><span id="cs">00</span>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     2 · CONTEXTO
-═══════════════════════════════════════════ -->
-<section>
-  <div class="bento" style="grid-template-columns:1.6fr 1fr;grid-template-rows:1fr 1fr">
-
-    <div class="card blue" style="grid-row:1/3">
-      <div class="lbl">El encargo</div>
-      <div class="ttl" style="font-size:1.65rem;margin-top:.3rem">
-        Una aerolínea europea nos pide rehacer su BBDD desde cero.
-      </div>
-      <div class="bod" style="margin-top:.5rem">
-        Los requisitos llegan de forma incremental, como en un proyecto real.
-        Cada entrega amplía el modelo sin romper lo anterior.
-        El sistema gestiona flotas, vuelos, tripulaciones y billetes.
-      </div>
+        <div id="clock-date">--- -- ----</div>
     </div>
 
-    <div class="card">
-      <div class="lbl">Alcance técnico</div>
-      <div class="chips" style="margin-top:6px">
-        <span class="chip g">DDL</span>
-        <span class="chip g">DML</span>
-        <span class="chip g">Consultas</span>
-        <span class="chip g">Triggers</span>
-        <span class="chip g">Funciones</span>
-        <span class="chip g">Procedimientos</span>
-        <span class="chip g">Vistas</span>
-        <span class="chip g">Transacciones</span>
-      </div>
+    <!-- THEME TOGGLE -->
+    <div id="theme-toggle" role="switch" aria-checked="false" tabindex="0" title="Cambiar tema">
+        <span class="toggle-label" id="lbl-light">LUZ</span>
+        <div id="toggle-track"><div id="toggle-thumb"></div></div>
+        <span class="toggle-label" id="lbl-dark">NOCHE</span>
     </div>
 
-    <div class="card">
-      <div class="lbl">El modelo</div>
-      <div style="display:flex;gap:2rem;margin-top:8px;align-items:flex-end">
-        <div><div class="snum">11</div><div class="slbl">tablas</div></div>
-        <div><div class="snum">6</div><div class="slbl">enums</div></div>
-        <div><div class="snum">2</div><div class="slbl">jerarquías</div></div>
-      </div>
-    </div>
+    <!-- REVEAL PRESENTATION -->
+    <div class="reveal">
+        <div class="slides">
 
-  </div>
-</section>
+            <!-- ╔══════════════════════════════╗
+                 ║  01 · PORTADA — A (15s)     ║
+                 ╚══════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:340px;height:340px;top:-40px;left:120px;opacity:.55;"></div>
+                <div class="float-blob" style="width:200px;height:200px;bottom:100px;right:100px;opacity:.45;"></div>
+                <div class="neu-card puzzle-tl" style="max-width:720px;width:100%;position:relative;z-index:1;">
+                    <p style="font-family:'Space Mono',monospace;font-size:.55em;letter-spacing:.25em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 8px;">
+                        Proyecto BBDD · DAW 25–26
+                    </p>
+                    <div class="accent-line"></div>
+                    <h1 style="font-size:2.8em;line-height:1.1;margin:.15em 0 .3em;">
+                        ATLANTIC<br><span class="accent">AIRLINES</span>
+                    </h1>
+                    <p style="font-size:.85em;color:var(--text-secondary);margin:0 0 24px;line-height:1.5;">
+                        Base de datos relacional para la gestión completa<br>de una aerolínea europea
+                    </p>
+                    <p style="font-family:'Space Mono',monospace;font-size:.55em;letter-spacing:.12em;color:var(--text-secondary);margin:0;">
+                        Javier Guisande &amp; Enrique Caballero
+                    </p>
+                </div>
+            </section>
 
-<!-- ═══════════════════════════════════════════
-     3 · MODELO — ARQUITECTURA GENERAL
-═══════════════════════════════════════════ -->
-<section>
-  <div style="display:flex;gap:14px;align-items:center;flex-shrink:0">
-    <h3 style="font-size:1.2rem">Modelo relacional</h3>
-    <div class="bc">Slide <span>1 / 3</span> — visión general</div>
-    <div class="chips" style="margin-left:auto">
-      <span class="chip g">Infraestructura</span>
-      <span class="chip b">Núcleo</span>
-      <span class="chip a">Personas</span>
-      <span class="chip p">Puente N:N</span>
-    </div>
-  </div>
+            <!-- ╔══════════════════════════════╗
+                 ║  02 · CONTEXTO — A (40s)    ║
+                 ╚══════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:260px;height:260px;bottom:20px;right:780px;opacity:.4;"></div>
+                <div class="corner-label puzzle-br">Contexto</div>
+                <div style="display:flex;gap:20px;align-items:stretch;width:1120px;">
 
-  <div class="arch">
+                    <!-- Bloque izquierda: el reto -->
+                    <div class="neu-card puzzle-tl" style="flex:1.5;display:flex;flex-direction:column;gap:16px;">
+                        <span class="lbl" style="font-size:.55em;">El reto</span>
+                        <div class="accent-line" style="margin:0 0 4px;"></div>
+                        <h2 style="font-size:1.3em;margin:0;line-height:1.3;">
+                            Rehacer desde cero la base de datos<br>de una aerolínea europea
+                        </h2>
+                        <p class="bod" style="margin:0;">
+                            Requisitos incrementales, como en un proyecto real.<br>Cada entrega amplía el modelo sin romper lo anterior.
+                        </p>
+                        <ul class="cl" style="margin-top:4px;">
+                            <li>Flota propia y leasing con estados operativos</li>
+                            <li>Rutas internacionales y venta de billetes con ciclo de vida</li>
+                            <li>Tripulaciones certificadas con control de horas de vuelo</li>
+                        </ul>
+                    </div>
 
-    <!-- CAPA 1: Infraestructura -->
-    <div class="layer">
-      <div class="layer-hdr">
-        <span class="layer-tag i">Infraestructura</span>
-        <div class="layer-line"></div>
-      </div>
-      <div class="nodes">
-        <div class="nd i">
-          <b>modelos</b>
-          <small>Airbus · Boeing · Embraer<br>COMAC · Bombardier</small>
+                    <!-- Bloque derecha: números -->
+                    <div style="flex:1;display:flex;flex-direction:column;gap:14px;">
+                        <div class="neu-card" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+                            <div class="snum">11</div>
+                            <div class="slbl">tablas relacionales</div>
+                            <div style="margin-top:20px;display:flex;justify-content:center;gap:2.5rem;">
+                                <div>
+                                    <div class="snum" style="font-size:2rem;">2</div>
+                                    <div class="slbl">jerarquías</div>
+                                </div>
+                                <div>
+                                    <div class="snum" style="font-size:2rem;">6</div>
+                                    <div class="slbl">enums</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="neu-card puzzle-br" style="flex:0;padding:20px 24px;">
+                            <span class="lbl" style="font-size:.55em;">Tecnología</span>
+                            <p style="font-size:1.1em;font-weight:600;margin:8px 0 0;color:var(--text-primary);">
+                                PostgreSQL 16+
+                            </p>
+                            <p style="font-size:.7em;color:var(--text-secondary);margin:4px 0 0;">
+                                PL/pgSQL · Triggers · Funciones · Vistas · Window Functions
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════════╗
+                 ║  03 · MODELO — CAPA 1 (A, 45s) ║
+                 ╚══════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:220px;height:220px;top:5px;left:100px;opacity:.4;"></div>
+                <div class="corner-label puzzle-tr">Capa 1 / 3</div>
+                <div style="width:1100px;display:flex;flex-direction:column;gap:16px;">
+                    <div class="neu-card puzzle-tl" style="display:flex;flex-direction:column;gap:12px;">
+                        <span class="lbl" style="font-size:.55em;">Infraestructura</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <div class="er-box" style="border-radius:var(--border-radius);padding:14px 14px 8px;box-shadow:0 20px 60px rgba(0,0,0,.45);margin:4px 0;">
+                            <img src="src/Infraestructura.drawio.svg" alt="Capa 1: Infraestructura — aerolíneas, aeropuertos, rutas, modelos y aviones" style="max-width:100%;max-height:400px;object-fit:contain;display:block;">
+                        </div>
+                        <ul class="cl" style="margin-top:8px;">
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">modelos_avion</code> → <code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">aviones</code> con estado, leasing y mantenimiento</li>
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">aeropuertos</code> con geolocalización real (POINT) → <code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">rutas</code> origen-destino</li>
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">aerolineas</code> con auto-relación: cada aerolínea puede tener filiales</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mini-ref" data-layer="infraestructura" title="Ver diagrama completo">
+                    <img src="src/Comlpeto.drawio.svg" alt="Modelo completo">
+                    <div class="mini-label">▸ Capa 1 · Infraestructura</div>
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════════╗
+                 ║  04 · MODELO — CAPA 2 (B, 45s) ║
+                 ╚══════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:240px;height:240px;bottom:-25px;left:120px;opacity:.4;"></div>
+                <div class="corner-label puzzle-br">Capa 2 / 3</div>
+                <div style="width:1100px;display:flex;flex-direction:column;gap:16px;">
+                    <div class="neu-card puzzle-tr" style="display:flex;flex-direction:column;gap:12px;">
+                        <span class="lbl" style="font-size:.55em;">Núcleo operacional</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <div class="er-box" style="border-radius:var(--border-radius);padding:14px 14px 8px;box-shadow:0 20px 60px rgba(0,0,0,.45);margin:4px 0;">
+                            <img src="src/Operacional.drawio.svg" alt="Capa 2: Núcleo operacional — vuelos, billetes, clientes" style="max-width:100%;max-height:380px;object-fit:contain;display:block;">
+                        </div>
+                        <ul class="cl" style="margin-top:8px;">
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">vuelos</code> es la tabla eje — conecta avión, ruta y fechas en un solo registro</li>
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">billetes</code> cuelgan de vuelos: 10 estados, precio, clase y equipaje</li>
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">clientes</code> independientes de empleados — cada uno con sus propios atributos</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mini-ref" data-layer="operacional" title="Ver diagrama completo">
+                    <img src="src/Comlpeto.drawio.svg" alt="Modelo completo">
+                    <div class="mini-label">▸ Capa 2 · Operacional</div>
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════════╗
+                 ║  05 · MODELO — CAPA 3 (A, 45s) ║
+                 ╚══════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:200px;height:200px;top:60px;left:140px;opacity:.4;"></div>
+                <div class="corner-label puzzle-tl">Capa 3 / 3</div>
+                <div style="width:1100px;display:flex;flex-direction:column;gap:16px;">
+                    <div class="neu-card puzzle-bl" style="display:flex;flex-direction:column;gap:12px;">
+                        <span class="lbl" style="font-size:.55em;">Personal de vuelo</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <div class="er-box" style="border-radius:var(--border-radius);padding:14px 14px 8px;box-shadow:0 20px 60px rgba(0,0,0,.45);margin:4px 0;">
+                            <img src="src/PersonalDeVuelo.drawio.svg" alt="Capa 3: Personal de vuelo — empleados, herencia JOINED, tripulaciones" style="max-width:90%;max-height:300px;object-fit:contain;display:block;">
+                        </div>
+                        <ul class="cl" style="margin-top:8px;">
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">empleados</code> → <code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">empleados_aire</code> con herencia JOINED: la PK de empleados es FK y PK a la vez</li>
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">tripulaciones</code>: tabla puente N:N entre vuelos y personal de aire</li>
+                            <li><code style="font-family:'Fira Code',monospace;font-size:.85em;color:var(--accent);">ON DELETE CASCADE</code> mantiene la integridad automáticamente</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mini-ref" data-layer="personal" title="Ver diagrama completo">
+                    <img src="src/Comlpeto.drawio.svg" alt="Modelo completo">
+                    <div class="mini-label">▸ Capa 3 · Personal</div>
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════╗
+                 ║  06 · DECISIONES (B, 1:00) ║
+                 ╚══════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:400px;height:400px;top:-100px;right:525px;opacity:.4;"></div>
+                <div class="corner-label puzzle-tr">Decisiones de diseño</div>
+                <div style="display:flex;gap:16px;width:1120px;align-items:stretch;">
+
+                    <!-- Card 1 -->
+                    <div class="decision-card puzzle-tl" style="flex:1;">
+                        <div class="decision-icon">⚡</div>
+                        <div class="decision-title">Herencia dual</div>
+                        <p class="decision-desc">
+                            <strong>TABLE_PER_CLASS</strong> para personas → clientes y empleados.<br>
+                            <strong>JOINED</strong> para empleados → empleados_aire.<br>
+                            Sin JOINs innecesarios donde no hacen falta.
+                        </p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="decision-card" style="flex:1;">
+                        <div class="decision-icon">⟳</div>
+                        <div class="decision-title">Columna generada</div>
+                        <p class="decision-desc">
+                            <code style="font-family:'Fira Code',monospace;font-size:.8em;color:var(--accent);">duracion_real</code> =
+                            fecha_llegada − fecha_salida como<br>
+                            <strong>GENERATED ALWAYS AS STORED</strong>.<br>
+                            La BD la calcula. No puede desincronizarse.
+                        </p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="decision-card puzzle-br" style="flex:1;">
+                        <div class="decision-icon">📦</div>
+                        <div class="decision-title">Histórico blindado</div>
+                        <p class="decision-desc">
+                            <strong>ON DELETE SET NULL</strong> en vuelos.idavion.<br>
+                            Retirar un avión no borra el historial<br>
+                            de vuelos que ya operó.
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════╗
+                 ║  07 · AUTOMATISMOS (A, 45s)║
+                 ╚══════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:340px;height:340px;bottom:35px;left:320px;opacity:.4;"></div>
+                <div class="corner-label puzzle-bl">Automatismos</div>
+                <div style="display:flex;gap:18px;width:1100px;align-items:stretch;">
+
+                    <!-- Card 1: Trigger horas -->
+                    <div class="neu-card puzzle-tl" style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                        <span class="lbl" style="font-size:.55em;">Trigger post-vuelo</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                            Horas acumuladas<br>sin intervención
+                        </h3>
+                        <p class="bod" style="margin:0;">
+                            Al finalizar un vuelo, un trigger <strong>AFTER UPDATE</strong> suma
+                            automáticamente las horas de vuelo a cada tripulante.
+                        </p>
+                        <p style="font-family:'Fira Code',monospace;font-size:.55em;color:var(--text-secondary);margin:0;line-height:1.5;">
+                            UPDATE empleados_aire<br>
+                            SET horas_realizadas = horas_realizadas + duracion<br>
+                            FROM vuelos WHERE NEW.estado = 'FINALIZADO'
+                        </p>
+                    </div>
+
+                    <!-- Card 2: Trigger cancelación -->
+                    <div class="neu-card puzzle-br" style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                        <span class="lbl" style="font-size:.55em;">Trigger cancelación</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                            Reembolso masivo<br>en cascada
+                        </h3>
+                        <p class="bod" style="margin:0;">
+                            Al cancelar un vuelo, todos sus billetes pasan a
+                            <strong>REEMBOLSADO</strong> sin que la aplicación mueva un dedo.
+                        </p>
+                        <p style="font-family:'Fira Code',monospace;font-size:.55em;color:var(--text-secondary);margin:0;line-height:1.5;">
+                            UPDATE billetes<br>
+                            SET estado = 'REEMBOLSADO'<br>
+                            WHERE idvuelo = NEW.idvuelo<br>
+                            AND estado = 'VIGENTE'
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════╗
+                 ║  08 · CIERRE — B (15s)     ║
+                 ╚══════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:350px;height:350px;top:-40px;right:240px;opacity:.5;"></div>
+                <div class="float-blob" style="width:200px;height:200px;bottom:90px;left:240px;opacity:.4;"></div>
+                <div class="neu-card puzzle-br" style="max-width:680px;width:100%;position:relative;z-index:1;text-align:center;">
+                    <p style="font-family:'Space Mono',monospace;font-size:.55em;letter-spacing:.22em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 8px;">
+                        En resumen
+                    </p>
+                    <div class="accent-line" style="margin:12px auto;"></div>
+                    <h2 style="font-size:1.6em;line-height:1.3;margin:.3em 0;">
+                        Modelo sólido,<br><span class="accent">automatizado</span> y realista
+                    </h2>
+                    <p style="font-size:.8em;color:var(--text-secondary);margin:18px 0;line-height:1.6;">
+                        11 tablas &nbsp;·&nbsp; 2 estrategias de herencia &nbsp;·&nbsp; 6 enums<br>
+                        5+ automatismos en PL/pgSQL
+                    </p>
+                    <p style="font-family:'Space Mono',monospace;font-size:.6em;letter-spacing:.1em;color:var(--text-secondary);margin:20px 0 0;">
+                        Javier Guisande &amp; Enrique Caballero
+                    </p>
+                </div>
+            </section>
+
+            <!-- ╔══════════════════════════════╗
+                 ║  09 · ¿PREGUNTAS?           ║
+                 ╚══════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:450px;height:450px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.35;"></div>
+                <h1 style="font-size:3.5em;margin:0;position:relative;z-index:1;font-family:'Space Mono',monospace;">
+                    ¿<span class="accent">Preguntas</span>?
+                </h1>
+                <p style="font-size:.9em;color:var(--text-secondary);margin-top:16px;position:relative;z-index:1;">
+                    Javier Guisande &amp; Enrique Caballero
+                </p>
+            </section>
+
         </div>
-        <span class="arr">→</span>
-        <div class="nd i">
-          <b>aviones</b>
-          <small>MSN único · matrícula<br>estado · leasing · revisiones</small>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!--  MODAL: DIAGRAM FULLSCREEN + ZOOM       -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="diagram-modal" class="dm-overlay" aria-hidden="true">
+        <button class="dm-close" title="Cerrar (ESC)">✕</button>
+        <div class="dm-toolbar">
+            <button class="dm-btn" id="dm-zoom-out" title="Alejar">−</button>
+            <span class="dm-zoom-lbl" id="dm-zoom-level">100%</span>
+            <button class="dm-btn" id="dm-zoom-in" title="Acercar">+</button>
+            <button class="dm-btn" id="dm-zoom-reset" title="Reset zoom">↺</button>
         </div>
-        <div class="sp"></div>
-        <div class="div"></div>
-        <div class="sp"></div>
-        <div class="nd i">
-          <b>aeropuertos</b>
-          <small>IATA / ICAO · ciudad<br>coordenadas POINT · tipo</small>
+        <div class="dm-viewport">
+            <img id="dm-img" src="" alt="" draggable="false" />
         </div>
-        <span class="arr">→</span>
-        <div class="nd i">
-          <b>rutas</b>
-          <small>origen → destino<br>duración estimada</small>
-        </div>
-        <div class="sp"></div>
-        <div class="div"></div>
-        <div class="sp"></div>
-        <div class="nd i" style="border-style:dashed;opacity:.85">
-          <b>aerolineas</b>
-          <small>IATA · ICAO · hub principal<br>↺ aerolínea padre</small>
-        </div>
-      </div>
     </div>
 
-    <!-- CAPA 2: Núcleo operacional -->
-    <div class="layer" style="border-color:rgba(59,130,246,.12)">
-      <div class="layer-hdr">
-        <span class="layer-tag c">Núcleo operacional</span>
-        <div class="layer-line" style="background:rgba(59,130,246,.15)"></div>
-      </div>
-      <div class="nodes">
-        <div class="nd cb">
-          <b>VUELOS ✈</b>
-          <small>fecha_salida TIMESTAMP<br>○ fecha_llegada TIMESTAMP</small>
-          <div class="gen">duracion_real ⚡ GENERATED ALWAYS AS (llegada − salida) STORED</div>
-          <div class="nul">idavion nullable → ON DELETE SET NULL</div>
-        </div>
-        <span class="arr">→</span>
-        <div class="nd c">
-          <b>billetes</b>
-          <small>clase · precio MONEY<br>asiento · estado (10 estados)<br>DEFAULT 'CREADO' · CHECK precio &gt; 0</small>
-        </div>
-        <span class="arr">→</span>
-        <div class="nd p">
-          <b>clientes</b>
-          <small>nombre · apellidos<br>dni UNIQUE · ○ pasaporte</small>
-        </div>
-      </div>
-    </div>
 
-    <!-- CAPA 3: Personal -->
-    <div class="layer">
-      <div class="layer-hdr">
-        <span class="layer-tag p">Personal</span>
-        <div class="layer-line"></div>
-      </div>
-      <div class="nodes">
-        <div class="nd p">
-          <b>empleados</b>
-          <small>cuenta_bancaria · nuss<br>fecha_contratacion · formacion</small>
-        </div>
-        <span class="arr">↗</span>
-        <div class="nd p" style="border-style:dashed">
-          <b>empleados_aire</b>
-          <small>Herencia JOINED ↑ empleados<br>puesto · licencia · horas_vuelo</small>
-        </div>
-        <span class="arr">→</span>
-        <div class="nd br">
-          <b>tripulaciones</b>
-          <small>PK+FK idvuelo<br>PK+FK idempleado<br>N:N vuelos ↔ empleados_aire</small>
-        </div>
-        <span class="arr" style="font-size:.9rem;color:rgba(59,130,246,.5)">↗ VUELOS</span>
-      </div>
-    </div>
+    <script src="dist/reveal.js"></script>
+    <script src="dist/plugin/notes.js"></script>
+    <script src="dist/plugin/markdown.js"></script>
+    <script src="dist/plugin/highlight.js"></script>
+    <script src="dist/plugin/zoom.js"></script>
+    <script>
+        /* ── REVEAL INIT ────────────────────────── */
+        Reveal.initialize({
+            hash: true,
+            center: true,
+            transition: 'slide',
+            transitionSpeed: 'default',
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2.0,
+            controls: true,
+            controlsLayout: 'bottom-right',
+            progress: true,
+            slideNumber: 'c/t',
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom],
+        });
 
-  </div>
-</section>
+        /* ── CLOCK ──────────────────────────────── */
+        const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-<!-- ═══════════════════════════════════════════
-     4 · MODELO — INFRAESTRUCTURA
-═══════════════════════════════════════════ -->
-<section>
-  <div style="display:flex;gap:14px;align-items:center;flex-shrink:0">
-    <h3 style="font-size:1.2rem">Modelo relacional · Infraestructura</h3>
-    <div class="bc">Slide <span>2 / 3</span></div>
-  </div>
+        function pad(n) { return String(n).padStart(2, '0'); }
 
-  <div class="tgrid" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr">
+        function tickClock() {
+            const now = new Date();
+            document.getElementById('ch').textContent = pad(now.getHours());
+            document.getElementById('cm').textContent = pad(now.getMinutes());
+            document.getElementById('cs').textContent = pad(now.getSeconds());
+            document.getElementById('clock-date').textContent =
+                `${DAYS[now.getDay()]} ${pad(now.getDate())} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+        }
+        tickClock();
+        setInterval(tickClock, 1000);
 
-    <div class="tc i">
-      <div class="tn i">modelos</div>
-      <div class="tf">
-        <div class="f pk">PK  idmodelo</div>
-        <div class="f">    nombre · fabricante (enum Airbus · Boeing · Embraer · COMAC · Bombardier)</div>
-        <div class="f">    alcance · asientos · tripulacion_maxima</div>
-        <div class="f">    peso_max_despegue · año_introduccion</div>
-        <div class="f">    motor · ○ nota_tecnica TEXT</div>
-      </div>
-    </div>
+        /* ── THEME TOGGLE ───────────────────────── */
+        const root = document.documentElement;
+        const track = document.getElementById('toggle-track');
+        const widget = document.getElementById('theme-toggle');
 
-    <div class="tc i">
-      <div class="tn i">aeropuertos</div>
-      <div class="tf">
-        <div class="f pk">PK  idaeropuerto</div>
-        <div class="f">    nombre</div>
-        <div class="f">    codigo_iata CHAR(3) UNIQUE · codigo_icao CHAR(4) UNIQUE</div>
-        <div class="f">    ciudad · pais</div>
-        <div class="f">    coordenadas POINT · zona_horaria</div>
-        <div class="f">    ○ capacidad · tipo (REGIONAL / NACIONAL / INTERNACIONAL)</div>
-      </div>
-    </div>
+        function applyTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            widget.setAttribute('aria-checked', theme === 'dark');
 
-    <div class="tc i">
-      <div class="tn i">aerolineas</div>
-      <div class="tf">
-        <div class="f pk">PK  idaerolinea</div>
-        <div class="f">    nombre · codigo_iata · codigo_icao</div>
-        <div class="f">    pais_origen · fecha_fundacion</div>
-        <div class="f fk">FK  hubprincipal → aeropuertos</div>
-        <div class="f fk">FK  ○ aerolineapadre → aerolineas  (autorreferencia)</div>
-        <div class="f nt">Una aerolínea puede ser filial de otra del mismo grupo.</div>
-      </div>
-    </div>
+            const darkCSS = document.getElementById('hljs-theme-dark');
+            const lightCSS = document.getElementById('hljs-theme-light');
+            if (darkCSS && lightCSS) {
+                darkCSS.disabled = (theme !== 'dark');
+                lightCSS.disabled = (theme === 'dark');
+            }
 
-    <div class="tc i">
-      <div class="tn i">rutas</div>
-      <div class="tf">
-        <div class="f pk">PK  idruta</div>
-        <div class="f fk">FK  idorigen  → aeropuertos</div>
-        <div class="f fk">FK  iddestino → aeropuertos</div>
-        <div class="f fk">FK  idaerolinea</div>
-        <div class="f">    nombre · duracion_estimada NUMERIC</div>
-        <div class="f">    ○ descripcion TEXT</div>
-        <div class="f nt">Una ruta puede existir sin vuelos asignados.</div>
-      </div>
-    </div>
+            // Swap SVG images: dark ↔ light (_claro)
+            var isLight = theme === 'light';
+            document.querySelectorAll('img[src$=".svg"]').forEach(function (img) {
+                var src = img.getAttribute('src');
+                if (isLight) {
+                    src = src.replace('Infraestructura.drawio.svg', 'Infraestructura_claro.drawio.svg');
+                    src = src.replace('Operacional.drawio.svg', 'Operacional_claro.drawio.svg');
+                    src = src.replace('PersonalDeVuelo.drawio.svg', 'PersonaDeAire_claro.drawio.svg');
+                    src = src.replace('Comlpeto.drawio.svg', 'Completo_claro.drawio.svg');
+                } else {
+                    src = src.replace('Infraestructura_claro.drawio.svg', 'Infraestructura.drawio.svg');
+                    src = src.replace('Operacional_claro.drawio.svg', 'Operacional.drawio.svg');
+                    src = src.replace('PersonaDeAire_claro.drawio.svg', 'PersonalDeVuelo.drawio.svg');
+                    src = src.replace('Completo_claro.drawio.svg', 'Comlpeto.drawio.svg');
+                }
+                if (src !== img.getAttribute('src')) img.setAttribute('src', src);
+            });
 
-  </div>
-</section>
+            try { localStorage.setItem('bbdd-theme', theme); } catch (e) { }
+        }
 
-<!-- ═══════════════════════════════════════════
-     5 · MODELO — CORE Y PERSONAS
-═══════════════════════════════════════════ -->
-<section>
-  <div style="display:flex;gap:14px;align-items:center;flex-shrink:0">
-    <h3 style="font-size:1.2rem">Modelo relacional · Core y personas</h3>
-    <div class="bc">Slide <span>3 / 3</span></div>
-  </div>
+        function toggleTheme() {
+            const current = root.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
 
-  <div class="tgrid" style="grid-template-columns:1fr 1.4fr 1fr;grid-template-rows:1fr 1fr auto">
+        track.addEventListener('click', toggleTheme);
+        widget.addEventListener('keydown', e => {
+            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleTheme(); }
+        });
 
-    <div class="tc c">
-      <div class="tn c">aviones</div>
-      <div class="tf">
-        <div class="f pk">PK  idavion</div>
-        <div class="f">    msn VARCHAR(20) · matricula</div>
-        <div class="f">    leasing BOOLEAN</div>
-        <div class="f fk">FK  idmodelo · FK idaerolinea</div>
-        <div class="f fk">FK  baseasignada → aeropuertos</div>
-        <div class="f">    estado (ACTIVO / EN MANTENIMIENTO / RETIRADO / ALMACENADO)</div>
-        <div class="f">    tipo_revision (A/B/C/D-CHECK)</div>
-      </div>
-    </div>
+        try {
+            const saved = localStorage.getItem('bbdd-theme');
+            if (saved) applyTheme(saved);
+            else if (window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
+            else applyTheme('light');
+        } catch (e) { }
 
-    <div class="tc c" style="grid-row:1/3">
-      <div class="tn c">vuelos ✈ — entidad central</div>
-      <div class="tf">
-        <div class="f pk">PK  idvuelo</div>
-        <div class="f fk">FK  idaerolinea</div>
-        <div class="f fk">FK  idruta</div>
-        <div class="f fk">FK  ○ idavion  (nullable)</div>
-        <div class="f">    fecha_salida TIMESTAMP NOT NULL</div>
-        <div class="f">    ○ fecha_llegada TIMESTAMP</div>
-        <div class="f gen">    duracion_real INTERVAL</div>
-        <div class="f gen">    GENERATED ALWAYS AS</div>
-        <div class="f gen">    (fecha_llegada − fecha_salida) STORED</div>
-        <div class="f" style="margin-top:6px">    estado:</div>
-        <div class="f">    PROGRAMADO · RETRASADO · EN RUTA</div>
-        <div class="f">    CANCELADO · DESVIADO · FINALIZADO</div>
-        <div class="f nt">Si el avión se da de baja, idavion → NULL.<br>El historial de vuelos se conserva.</div>
-      </div>
-    </div>
+                /* ── MODAL: OPEN / CLOSE + ZOOM ───────────── */
+        (function () {
+            var overlay = document.getElementById('diagram-modal');
+            var img = document.getElementById('dm-img');
+            var closeBtn = overlay.querySelector('.dm-close');
+            var viewport = overlay.querySelector('.dm-viewport');
+            var zoomOutBtn = document.getElementById('dm-zoom-out');
+            var zoomInBtn = document.getElementById('dm-zoom-in');
+            var zoomResetBtn = document.getElementById('dm-zoom-reset');
+            var zoomLbl = document.getElementById('dm-zoom-level');
 
-    <div class="tc c">
-      <div class="tn c">billetes</div>
-      <div class="tf">
-        <div class="f pk">PK  idbillete</div>
-        <div class="f fk">FK  idcliente · FK idvuelo</div>
-        <div class="f">    clase (TURISTA / BUSINESS / FIRST-CLASS)</div>
-        <div class="f">    asiento VARCHAR(5)</div>
-        <div class="f">    equipaje_facturado NUMERIC</div>
-        <div class="f">    precio MONEY  CHECK (&gt; 0)</div>
-        <div class="f">    estado (10 estados) DEFAULT 'CREADO'</div>
-      </div>
-    </div>
+            var scale = 1, tx = 0, ty = 0;
+            var dragging = false, dragMoved = false, sx, sy, stx, sty;
+            var MIN = 0.3, MAX = 8, STEP = 0.25;
 
-    <div class="tc p">
-      <div class="tn p">clientes</div>
-      <div class="tf">
-        <div class="f pk">PK  idcliente</div>
-        <div class="f">    nombre · apellidos · telefono · email</div>
-        <div class="f">    fecha_nacimiento</div>
-        <div class="f">    dni VARCHAR(18) UNIQUE</div>
-        <div class="f">    ○ pasaporte VARCHAR(10)</div>
-        <div class="f nt">TABLE_PER_CLASS: hereda de 'persona' (tabla eliminada).</div>
-      </div>
-    </div>
+            function upd() {
+                scale = Math.max(MIN, Math.min(MAX, Math.round(scale * 100) / 100));
+                img.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+                zoomLbl.textContent = Math.round(scale * 100) + '%';
+            }
 
-    <div class="tc p">
-      <div class="tn p">empleados  +  empleados_aire</div>
-      <div class="tf">
-        <div class="f pk">PK  idempleado (empleados)</div>
-        <div class="f fk">FK  idaerolinea</div>
-        <div class="f">    nombre · apellidos · telefono · email</div>
-        <div class="f">    cuenta_bancaria · nuss · formacion</div>
-        <div class="f nt">TABLE_PER_CLASS desde 'persona'.</div>
-        <div class="f" style="color:var(--amber-l);margin-top:4px">empleados_aire — Herencia JOINED:</div>
-        <div class="f pk" style="color:var(--purple-l)">PK+FK  idempleado  ON DELETE CASCADE</div>
-        <div class="f">    puesto · licencia · horas_minimas · horas_vuelo</div>
-      </div>
-    </div>
+            function zoomTo(newScale, ox, oy) {
+                ox = ox || innerWidth / 2;
+                oy = oy || innerHeight / 2;
+                var r = newScale / scale;
+                tx = ox - r * (ox - tx);
+                ty = oy - r * (oy - ty);
+                scale = newScale;
+                upd();
+            }
 
-    <div class="tc br" style="grid-column:1/4">
-      <div class="tn br">tripulaciones — tabla puente N:N</div>
-      <div style="display:flex;gap:2rem;align-items:center;margin-top:4px">
-        <div class="tf">
-          <div class="f pk">PK + FK  idvuelo → vuelos</div>
-          <div class="f pk">PK + FK  idempleado → empleados_aire</div>
-        </div>
-        <div class="f" style="color:var(--muted);font-size:.8rem;max-width:460px">
-          Resuelve la relación N:N entre vuelos y empleados_aire.
-          Un vuelo tiene múltiples tripulantes; un empleado de aire puede tripular múltiples vuelos.
-        </div>
-      </div>
-    </div>
+            function openModal(src) {
+                // Always use dark version in modal (better on dark overlay)
+                src = src.replace('Infraestructura_claro.drawio.svg', 'Infraestructura.drawio.svg');
+                src = src.replace('Operacional_claro.drawio.svg', 'Operacional.drawio.svg');
+                src = src.replace('PersonaDeAire_claro.drawio.svg', 'PersonalDeVuelo.drawio.svg');
+                src = src.replace('Completo_claro.drawio.svg', 'Comlpeto.drawio.svg');
+                img.src = src;
+                scale = 1; tx = 0; ty = 0; upd();
+                overlay.classList.add('active');
+                overlay.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
 
-  </div>
-</section>
+            function closeModal() {
+                overlay.classList.remove('active');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                img.src = '';
+                scale = 1; tx = 0; ty = 0;
+            }
 
-<!-- ═══════════════════════════════════════════
-     6 · DECISIONES DE DISEÑO
-═══════════════════════════════════════════ -->
-<section>
-  <h3 style="font-size:1.2rem;flex-shrink:0">Decisiones de diseño</h3>
+            function bindErBoxes() {
+                document.querySelectorAll('.er-box').forEach(function (box) {
+                    if (box._modalBound) return;
+                    box._modalBound = true;
+                    box.addEventListener('click', function () {
+                        var i = box.querySelector('img');
+                        if (i) openModal(i.getAttribute('src'));
+                    });
+                });
+            }
+            Reveal.on('ready', bindErBoxes);
+            Reveal.on('slidechanged', bindErBoxes);
+            bindErBoxes();
 
-  <div class="bento" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr">
+            // Mini-refs: click → abre diagrama completo centrado en la capa
+            var layerPositions = {
+                infraestructura: { x: 40, y: 50,  w: 800, h: 580 },
+                operacional:    { x: 80, y: 560, w: 1000, h: 480 },
+                personal:       { x: 380, y: 820, w: 750, h: 550 }
+            };
+            function bindMiniRefs() {
+                document.querySelectorAll('.mini-ref').forEach(function (ref) {
+                    if (ref._miniBound) return;
+                    ref._miniBound = true;
+                    ref.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        var layer = ref.getAttribute('data-layer');
+                        openModal('src/Comlpeto.drawio.svg');
+                        if (layer && layerPositions[layer]) {
+                            var p = layerPositions[layer];
+                            var fs = Math.min(innerWidth / p.w, innerHeight / p.h, 3);
+                            scale = fs * 0.85;
+                            tx = innerWidth / 2 - (p.x + p.w / 2) * scale;
+                            ty = innerHeight / 2 - (p.y + p.h / 2) * scale;
+                            upd();
+                        }
+                    });
+                });
+            }
+            Reveal.on('slidechanged', bindMiniRefs);
+            bindMiniRefs();
 
-    <div class="card">
-      <div class="lbl">Herencia 1 · Personas</div>
-      <div class="ttl">TABLE_PER_CLASS</div>
-      <div class="bod">
-        La tabla <code>persona</code> desaparece del modelo relacional.
-        Sus atributos se replican directamente en <code>clientes</code>
-        y <code>empleados</code>. Sin JOINs de herencia, sin tabla padre.
-      </div>
-    </div>
+            // ── Cerrar ──
+            closeBtn.addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal();
+            });
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) closeModal();
+                if (e.target === viewport && !dragMoved) closeModal();
+            });
 
-    <div class="card">
-      <div class="lbl">Herencia 2 · Personal de vuelo</div>
-      <div class="ttl">JOINED</div>
-      <div class="bod">
-        <code>empleados_aire</code> usa la PK de <code>empleados</code>
-        como FK y PK a la vez. <code>ON DELETE CASCADE</code> mantiene
-        la integridad. Sin datos redundantes aunque la especialización sea total.
-      </div>
-    </div>
+            // ── Wheel zoom ──
+            viewport.addEventListener('wheel', function (e) {
+                if (!overlay.classList.contains('active')) return;
+                e.preventDefault();
+                zoomTo(scale + (e.deltaY > 0 ? -STEP : STEP), e.clientX, e.clientY);
+            }, { passive: false });
 
-    <div class="card blue">
-      <div class="lbl">Columna calculada persistida</div>
-      <div class="ttl" style="font-size:1.05rem;font-family:monospace">
-        duracion_real GENERATED ALWAYS AS<br>(fecha_llegada − fecha_salida) STORED
-      </div>
-      <div class="bod" style="margin-top:.4rem">
-        La BD calcula y persiste la duración automáticamente.
-        No puede desincronizarse. No requiere lógica de aplicación.
-      </div>
-    </div>
+            // ── Button zoom ──
+            zoomInBtn.addEventListener('click', function () { zoomTo(scale + STEP); });
+            zoomOutBtn.addEventListener('click', function () { zoomTo(scale - STEP); });
+            zoomResetBtn.addEventListener('click', function () { scale = 1; tx = 0; ty = 0; upd(); });
 
-    <div class="card">
-      <div class="lbl">Integridad histórica</div>
-      <div class="ttl">ON DELETE SET NULL</div>
-      <div class="bod">
-        Cuando un avión se retira, <code>idavion</code> en sus vuelos
-        pasa a <code>NULL</code>. El historial queda intacto para
-        auditorías y reportes, sin borrar registros operativos.
-      </div>
-    </div>
+            // ── Drag to pan ──
+            viewport.addEventListener('mousedown', function (e) {
+                if (!overlay.classList.contains('active')) return;
+                dragging = true; dragMoved = false;
+                sx = e.clientX; sy = e.clientY;
+                stx = tx; sty = ty;
+                viewport.classList.add('grabbing');
+                e.preventDefault();
+            });
+            window.addEventListener('mousemove', function (e) {
+                if (!dragging) return;
+                if (Math.abs(e.clientX - sx) > 3 || Math.abs(e.clientY - sy) > 3) dragMoved = true;
+                tx = stx + (e.clientX - sx);
+                ty = sty + (e.clientY - sy);
+                upd();
+            });
+            window.addEventListener('mouseup', function () {
+                if (dragging) { dragging = false; viewport.classList.remove('grabbing'); }
+            });
 
-  </div>
-</section>
+            // ── Touch ──
+            var td = 0, ts = 1;
+            viewport.addEventListener('touchstart', function (e) {
+                if (e.touches.length === 1) {
+                    dragging = true; dragMoved = false;
+                    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+                    stx = tx; sty = ty;
+                } else if (e.touches.length === 2) {
+                    dragging = false;
+                    td = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                                    e.touches[0].clientY - e.touches[1].clientY);
+                    ts = scale;
+                }
+            }, { passive: false });
+            viewport.addEventListener('touchmove', function (e) {
+                if (e.touches.length === 1 && dragging) {
+                    if (Math.abs(e.touches[0].clientX - sx) > 3 || Math.abs(e.touches[0].clientY - sy) > 3) dragMoved = true;
+                    tx = stx + (e.touches[0].clientX - sx);
+                    ty = sty + (e.touches[0].clientY - sy);
+                    upd();
+                } else if (e.touches.length === 2 && td > 0) {
+                    var d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                                       e.touches[0].clientY - e.touches[1].clientY);
+                    scale = ts * (d / td);
+                    upd();
+                }
+            }, { passive: false });
+            viewport.addEventListener('touchend', function () { dragging = false; td = 0; });
+        })();
+    </script>
 
-<!-- ═══════════════════════════════════════════
-     7 · LO MÁS INTERESANTE
-═══════════════════════════════════════════ -->
-<section>
-  <h3 style="font-size:1.2rem;flex-shrink:0">Lo más interesante del proyecto</h3>
-
-  <div class="bento" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr">
-
-    <div class="card blue" style="grid-row:1/3">
-      <div class="lbl">PL/pgSQL · Triggers</div>
-      <div class="ttl" style="font-size:1.1rem">Lógica en la base de datos</div>
-      <ul class="cl" style="margin-top:.7rem">
-        <li>
-          Al finalizar un vuelo, el trigger acumula automáticamente
-          las horas de vuelo de cada tripulante que participó.
-        </li>
-        <li>
-          Al cancelar un vuelo, todos sus billetes pasan a estado
-          <code>CANCELADO</code> — sin intervención de la aplicación.
-        </li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <div class="lbl">Funciones PL/pgSQL</div>
-      <div class="ttl" style="font-size:1.05rem">Informes parametrizados</div>
-      <div class="bod">
-        <code>informe_cliente(dni)</code><br>
-        Historial de rutas + gasto total acumulado.<br><br>
-        <code>conectividad_aeropuerto(id)</code><br>
-        Evalúa conectividad según tipo de aeropuerto.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="lbl">Consulta · Window Function</div>
-      <div class="ttl" style="font-size:1.05rem">NTILE(4)</div>
-      <div class="bod">
-        Clasifica vuelos en cuartiles de duración por aerolínea
-        (cortos / medios / largos / muy largos).
-        Partición por <code>idaerolinea</code>, sin RANK.
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="lbl">Transacciones multi-usuario</div>
-      <div class="ttl" style="font-size:1.05rem">Bloqueos reales</div>
-      <div class="bod">
-        <code>SELECT FOR UPDATE / SHARE</code> para control de concurrencia.
-        Bloqueo compartido en auditorías simultáneas.
-        Bloqueo exclusivo para modificaciones de modelos.
-      </div>
-    </div>
-
-    <div class="card green">
-      <div class="lbl">Vistas + Procedimiento</div>
-      <div class="chips" style="margin-top:5px">
-        <span class="chip g">Vista auditoría empleados</span>
-        <span class="chip g">Vista auditoría aviones</span>
-        <span class="chip g">reasignarEmpleadosAerolinea()</span>
-      </div>
-      <div class="bod" style="margin-top:.5rem">
-        Transfiere en bloque toda la plantilla de una aerolínea a otra.
-        Útil en fusiones o adquisiciones del grupo.
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════
-     8 · CIERRE
-═══════════════════════════════════════════ -->
-<section>
-  <div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
-
-    <div>
-      <div class="c-tag">Conclusión</div>
-      <h2 style="font-size:2.3rem;margin-top:.5rem;letter-spacing:-.03em;line-height:1.1">
-        Un modelo sólido,<br>automatizado y realista.
-      </h2>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-      <div class="card"><div class="snum">11</div><div class="slbl">tablas relacionales</div></div>
-      <div class="card"><div class="snum">2</div><div class="slbl">estrategias de herencia</div></div>
-      <div class="card"><div class="snum">6</div><div class="slbl">enums de dominio</div></div>
-      <div class="card blue"><div class="snum">5+</div><div class="slbl">automatismos PL/pgSQL</div></div>
-    </div>
-
-    <div class="card" style="flex:0">
-      <div class="lbl">Equipo</div>
-      <div style="display:flex;gap:3rem;margin-top:6px;align-items:center">
-        <div>
-          <div style="font-weight:700;color:var(--text);font-size:1rem">Javier García</div>
-          <div style="font-size:.78rem;color:var(--blue-l)">github.com/jgm527</div>
-        </div>
-        <div>
-          <div style="font-weight:700;color:var(--text);font-size:1rem">Enrique Alonso</div>
-          <div style="font-size:.78rem;color:var(--blue-l)">github.com/acenriquealonso</div>
-        </div>
-        <div style="margin-left:auto">
-          <div class="chips">
-            <span class="chip b">PostgreSQL</span>
-            <span class="chip">DAW 25–26</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-</div>
-</div>
-<script src="dist/reveal.js"></script>
-<script src="dist/plugin/notes.js"></script>
-<script src="dist/plugin/highlight.js"></script>
-<script>
-  Reveal.initialize({
-    hash: true,
-    transition: 'fade',
-    transitionSpeed: 'fast',
-    backgroundTransition: 'fade',
-    progress: true,
-    controls: true,
-    controlsLayout: 'bottom-right',
-    width: 1280,
-    height: 720,
-    margin: 0,
-    minScale: 0.2,
-    maxScale: 2.0,
-    plugins: [RevealHighlight, RevealNotes],
-  });
-</script>
 </body>
 </html>
