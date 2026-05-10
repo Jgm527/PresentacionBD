@@ -312,6 +312,62 @@
             object-fit: contain; display: block;
         }
 
+
+        /* ============================================================
+           SQL MODAL — CODE DISPLAY
+           ============================================================ */
+        .sql-overlay {
+            position: fixed; inset: 0; z-index: 1001;
+            background: rgba(0,0,0,0.85);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.28s ease, visibility 0.28s ease;
+        }
+        .sql-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .sql-close {
+            position: fixed; top: 18px; right: 22px; z-index: 1011;
+            background: none; border: none;
+            color: var(--text-primary); font-size: 1.6rem;
+            cursor: pointer; opacity: 0.55; transition: opacity 0.2s ease, color var(--transition);
+            padding: 8px; line-height: 1;
+        }
+        .sql-close:hover { opacity: 1; }
+
+        .sql-container {
+            max-width: 900px; max-height: 82vh; width: 90%;
+            overflow-y: auto;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 28px 32px;
+            transition: background var(--transition);
+        }
+        .sql-container pre {
+            margin: 0; background: transparent !important;
+            box-shadow: none !important;
+        }
+        .sql-container code {
+            font-family: 'Fira Code', monospace !important;
+            font-size: 0.68em !important;
+            line-height: 1.65 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            white-space: pre-wrap; word-break: break-word;
+        }
+        [data-theme="dark"] .sql-container code,
+        [data-theme="dark"] .sql-container code .hljs-keyword,
+        [data-theme="dark"] .sql-container code .hljs-title,
+        [data-theme="dark"] .sql-container code .hljs-type,
+        [data-theme="dark"] .sql-container code .hljs-built_in,
+        [data-theme="dark"] .sql-container code .hljs-literal,
+        [data-theme="dark"] .sql-container code .hljs-number,
+        [data-theme="dark"] .sql-container code .hljs-params {
+            font-weight: 400 !important;
+        }
+
+        /* Cursor hint on trigger cards */
+        [data-trigger] { cursor: pointer; }
+        [data-trigger]:hover { opacity: 0.92; transition: opacity 0.2s ease; }
         /* ============================================================
            DIAGRAM MODAL — FULLSCREEN LIGHTBOX + ZOOM
            ============================================================ */
@@ -714,8 +770,8 @@
                 <div style="display:flex;gap:16px;width:1120px;align-items:stretch;">
 
                     <!-- Card 1 -->
-                    <div class="decision-card puzzle-tl" style="flex:1;">
-                        <div class="decision-icon">⚡</div>
+                    <div class="decision-card puzzle-tl" data-trigger="3" title="Click para ver SQL" style="flex:1;">
+                        <img src="src/herencia.svg" alt="Herencia dual" class="decision-svg" style="width:100%;max-height:60px;object-fit:contain;margin:2px 0;">
                         <div class="decision-title">Herencia dual</div>
                         <p class="decision-desc">
                             <strong>TABLE_PER_CLASS</strong> para personas → clientes y empleados.<br>
@@ -725,8 +781,8 @@
                     </div>
 
                     <!-- Card 2 -->
-                    <div class="decision-card" style="flex:1;">
-                        <div class="decision-icon">⟳</div>
+                    <div class="decision-card" data-trigger="4" title="Click para ver SQL" style="flex:1;">
+                        <img src="src/autogenerado.svg" alt="Columna generada" class="decision-svg" style="width:100%;max-height:60px;object-fit:contain;margin:2px 0;">
                         <div class="decision-title">Columna generada</div>
                         <p class="decision-desc">
                             <code style="font-family:'Fira Code',monospace;font-size:.8em;color:var(--accent);">duracion_real</code> =
@@ -737,8 +793,8 @@
                     </div>
 
                     <!-- Card 3 -->
-                    <div class="decision-card puzzle-br" style="flex:1;">
-                        <div class="decision-icon">📦</div>
+                    <div class="decision-card puzzle-br" data-trigger="5" title="Click para ver SQL" style="flex:1;">
+                        <img src="src/historial.svg" alt="Histórico blindado" class="decision-svg" style="width:100%;max-height:60px;object-fit:contain;margin:2px 0;">
                         <div class="decision-title">Histórico blindado</div>
                         <p class="decision-desc">
                             <strong>ON DELETE SET NULL</strong> en vuelos.idavion.<br>
@@ -754,12 +810,12 @@
                  ║  07 · AUTOMATISMOS (A, 45s)║
                  ╚══════════════════════════════╝ -->
             <section>
-                <div class="float-blob" style="width:340px;height:340px;bottom:35px;left:320px;opacity:.4;"></div>
+                <div class="float-blob" style="width:340px;height:340px;bottom:20px;left:320px;opacity:.4;"></div>
                 <div class="corner-label puzzle-bl">Automatismos</div>
                 <div style="display:flex;gap:18px;width:1100px;align-items:stretch;">
 
                     <!-- Card 1: Trigger horas -->
-                    <div class="neu-card puzzle-tl" style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                    <div class="neu-card puzzle-tl" data-trigger="1" title="Click para ver código SQL" style="flex:1;display:flex;flex-direction:column;gap:12px;">
                         <span class="lbl" style="font-size:.55em;">Trigger post-vuelo</span>
                         <div class="accent-line" style="margin:0;"></div>
                         <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
@@ -777,7 +833,7 @@
                     </div>
 
                     <!-- Card 2: Trigger cancelación -->
-                    <div class="neu-card puzzle-br" style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                    <div class="neu-card puzzle-br" data-trigger="2" title="Click para ver código SQL" style="flex:1;display:flex;flex-direction:column;gap:12px;">
                         <span class="lbl" style="font-size:.55em;">Trigger cancelación</span>
                         <div class="accent-line" style="margin:0;"></div>
                         <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
@@ -838,6 +894,17 @@
         </div>
     </div>
 
+
+    <!-- ═══════════════════════════════════════ -->
+    <!--  SQL MODAL — TRIGGER CODE              -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="sql-modal" class="sql-overlay" aria-hidden="true">
+        <button class="sql-close" title="Cerrar (ESC)">✕</button>
+        <div class="sql-container">
+            <pre><code id="sql-code" class="language-sql"></code></pre>
+        </div>
+    </div>
+
     <!-- ═══════════════════════════════════════ -->
     <!--  MODAL: DIAGRAM FULLSCREEN + ZOOM       -->
     <!-- ═══════════════════════════════════════ -->
@@ -859,6 +926,8 @@
     <script src="dist/plugin/notes.js"></script>
     <script src="dist/plugin/markdown.js"></script>
     <script src="dist/plugin/highlight.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
     <script src="dist/plugin/zoom.js"></script>
     <script>
         /* ── REVEAL INIT ────────────────────────── */
@@ -921,11 +990,17 @@
                     src = src.replace('Operacional.drawio.svg', 'Operacional_claro.drawio.svg');
                     src = src.replace('PersonalDeVuelo.drawio.svg', 'PersonaDeAire_claro.drawio.svg');
                     src = src.replace('Comlpeto.drawio.svg', 'Completo_claro.drawio.svg');
+                    src = src.replace('herencia.svg', 'herencia_claro.svg');
+                    src = src.replace('autogenerado.svg', 'autogenerado_claro.svg');
+                    src = src.replace('historial.svg', 'historial_claro.svg');
                 } else {
                     src = src.replace('Infraestructura_claro.drawio.svg', 'Infraestructura.drawio.svg');
                     src = src.replace('Operacional_claro.drawio.svg', 'Operacional.drawio.svg');
                     src = src.replace('PersonaDeAire_claro.drawio.svg', 'PersonalDeVuelo.drawio.svg');
                     src = src.replace('Completo_claro.drawio.svg', 'Comlpeto.drawio.svg');
+                    src = src.replace('herencia_claro.svg', 'herencia.svg');
+                    src = src.replace('autogenerado_claro.svg', 'autogenerado.svg');
+                    src = src.replace('historial_claro.svg', 'historial.svg');
                 }
                 if (src !== img.getAttribute('src')) img.setAttribute('src', src);
             });
@@ -950,7 +1025,79 @@
             else applyTheme('light');
         } catch (e) { }
 
-                /* ── MODAL: OPEN / CLOSE + ZOOM ───────────── */
+        
+        /* ── SQL MODAL ──────────────────────────── */
+        (function () {
+            var sqlOverlay = document.getElementById('sql-modal');
+            var sqlCode = document.getElementById('sql-code');
+            var sqlClose = sqlOverlay.querySelector('.sql-close');
+
+            // Trigger SQL code
+            var triggerSQL = {
+                '1': '/* TRIGGER 1 — Sumar horas a empleados tras finalizar vuelo */\n\nCREATE OR REPLACE FUNCTION fn_sumar_horas_empleados()\nRETURNS TRIGGER AS $$\n\nBEGIN\n\n    IF NEW.estado = \'FINALIZADO\' AND OLD.estado <> \'FINALIZADO\' THEN\n        \n        UPDATE empleados_aire\n        SET horas_vuelo = horas_vuelo + EXTRACT(EPOCH FROM NEW.duracion_real)/3600\n        WHERE idempleado IN (\n            SELECT idempleado\n            FROM tripulaciones\n            WHERE idvuelo = NEW.idvuelo\n        );\n    \n    END IF;\n\n    RETURN NEW;\n\nEND $$ LANGUAGE plpgsql;\n\n\nCREATE OR REPLACE TRIGGER TG_sumar_horas_empleados\nAFTER UPDATE ON vuelos\nFOR EACH ROW\nEXECUTE FUNCTION fn_sumar_horas_empleados();',
+                '2': '/* TRIGGER 2 — Cancelación automática de billetes */\n\nCREATE OR REPLACE FUNCTION fn_cancelar_billetes()\nRETURNS TRIGGER AS $$\n\nBEGIN\n    IF NEW.estado = \'CANCELADO\' AND OLD.estado <> \'CANCELADO\' THEN\n        \n        UPDATE billetes\n        SET estado = \'REEMBOLSADO\'\n        WHERE idvuelo = NEW.idvuelo;\n    \n    END IF;\n\n    RETURN NEW;\n\nEND $$ LANGUAGE plpgsql;\n\n\nCREATE OR REPLACE TRIGGER TG_cancelar_billetes\nAFTER UPDATE ON vuelos\nFOR EACH ROW\nEXECUTE FUNCTION fn_cancelar_billetes();',
+                '3': '-- TABLE_PER_CLASS: persona NO existe como tabla. Sus atributos\n-- se replican directamente en clientes y empleados.\n\nCREATE TABLE clientes (\n    idcliente SERIAL PRIMARY KEY,\n    nombre VARCHAR(40) NOT NULL,\n    apellidos VARCHAR(70) NOT NULL,\n    telefono VARCHAR(18) NOT NULL,\n    email VARCHAR(60) NOT NULL,\n    fecha_nacimiento DATE NOT NULL,\n    dni VARCHAR(18) NOT NULL UNIQUE,\n    pasaporte VARCHAR(10)\n);\n\nCREATE TABLE empleados (\n    idempleado SERIAL PRIMARY KEY,\n    idaerolinea INT REFERENCES aerolineas(idaerolinea),\n    nombre VARCHAR(40) NOT NULL,\n    apellidos VARCHAR(70) NOT NULL,\n    telefono VARCHAR(18) NOT NULL,\n    email VARCHAR(60) NOT NULL,\n    fecha_nacimiento DATE NOT NULL,\n    cuenta_bancaria CHAR(24) NOT NULL,\n    fecha_contratacion DATE NOT NULL,\n    formacion TEXT NOT NULL\n);\n\n-- JOINED: empleados_aire usa la PK de empleados como FK y PK\n\nCREATE TABLE empleados_aire (\n    idempleado INT PRIMARY KEY REFERENCES empleados(idempleado) ON DELETE CASCADE,\n    puesto enum_puesto NOT NULL,\n    licencia_necesaria TEXT NOT NULL,\n    horas_minimas INT NOT NULL,\n    horas_vuelo INT NOT NULL,\n    descripcion TEXT\n);',
+                '4': 'ALTER TABLE vuelos\nADD COLUMN duracion_real INTERVAL\nGENERATED ALWAYS AS (fecha_llegada - fecha_salida) STORED;',
+                '5': 'ALTER TABLE vuelos\nALTER COLUMN idavion DROP NOT NULL,\nDROP CONSTRAINT vuelos_idavion_fkey,\nADD CONSTRAINT vuelos_idavion_fkey\nFOREIGN KEY (idavion)\nREFERENCES aviones(idavion) ON DELETE SET NULL;'
+            };
+
+            function openSqlModal(id) {
+                sqlCode.textContent = triggerSQL[id] || '';
+                sqlCode.removeAttribute('data-highlighted');
+                sqlOverlay.classList.add('active');
+                sqlOverlay.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                // Apply highlight.js
+                if (typeof hljs !== 'undefined') { sqlCode.removeAttribute('data-highlighted'); hljs.highlightElement(sqlCode); }
+            }
+
+            sqlClose.addEventListener('click', closeSqlModal);
+            sqlOverlay.addEventListener('click', function (e) {
+                if (e.target === sqlOverlay) closeSqlModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && sqlOverlay.classList.contains('active')) closeSqlModal();
+            });
+
+            // Bind trigger cards
+            function bindSqlCards() {
+                document.querySelectorAll('[data-trigger]').forEach(function (card) {
+                    if (card._sqlBound) return;
+                    card._sqlBound = true;
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('click', function () {
+                        openSqlModal(card.getAttribute('data-trigger'));
+                    });
+                });
+            }
+            // ── Alt+Click zoom in SQL modal ──
+            var sqlScale = 1;
+            sqlOverlay.addEventListener('click', function (e) {
+                if (!sqlOverlay.classList.contains('active')) return;
+                if (!e.altKey && !e.ctrlKey) return;
+                e.preventDefault();
+                var container = sqlOverlay.querySelector('.sql-container');
+                sqlScale = sqlScale >= 1.5 ? 1 : 1.5;
+                container.style.transform = 'scale(' + sqlScale + ')';
+                container.style.transformOrigin = (e.clientX / innerWidth * 100) + '% ' + (e.clientY / innerHeight * 100) + '%';
+                container.style.transition = 'transform 0.3s ease';
+            });
+            function closeSqlModal() {
+                sqlOverlay.classList.remove('active');
+                sqlOverlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+                sqlCode.textContent = '';
+                sqlScale = 1;
+                var c = sqlOverlay.querySelector('.sql-container');
+                if (c) { c.style.transform = ''; c.style.transformOrigin = ''; }
+            }
+
+            Reveal.on('ready', bindSqlCards);
+            Reveal.on('slidechanged', bindSqlCards);
+            bindSqlCards();
+        })();
+
+        /* ── MODAL: OPEN / CLOSE + ZOOM ───────────── */
         (function () {
             var overlay = document.getElementById('diagram-modal');
             var img = document.getElementById('dm-img');
@@ -987,6 +1134,9 @@
                 src = src.replace('Operacional_claro.drawio.svg', 'Operacional.drawio.svg');
                 src = src.replace('PersonaDeAire_claro.drawio.svg', 'PersonalDeVuelo.drawio.svg');
                 src = src.replace('Completo_claro.drawio.svg', 'Comlpeto.drawio.svg');
+                    src = src.replace('herencia_claro.svg', 'herencia.svg');
+                    src = src.replace('autogenerado_claro.svg', 'autogenerado.svg');
+                    src = src.replace('historial_claro.svg', 'historial.svg');
                 img.src = src;
                 scale = 1; tx = 0; ty = 0; upd();
                 overlay.classList.add('active');
@@ -1052,6 +1202,15 @@
             overlay.addEventListener('click', function (e) {
                 if (e.target === overlay) closeModal();
                 if (e.target === viewport && !dragMoved) closeModal();
+            });
+
+            // ── Alt+Click zoom ──
+            viewport.addEventListener('click', function (e) {
+                if (!overlay.classList.contains('active')) return;
+                if (!e.altKey && !e.ctrlKey) return;
+                e.preventDefault();
+                var targetScale = scale >= 2 ? 1 : 2;
+                zoomTo(targetScale, e.clientX, e.clientY);
             });
 
             // ── Wheel zoom ──
