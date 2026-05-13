@@ -1,913 +1,913 @@
-(function(e,t){typeof exports==`object`&&typeof module<`u`?module.exports=t():typeof define==`function`&&define.amd?define([],t):(e=typeof globalThis<`u`?globalThis:e||self,e.RevealNotes=t())})(this,function(){var e=`<!--
-	NOTE: You need to build the notes plugin after making changes to this file.
--->
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-
-		<title>reveal.js - Speaker View</title>
-
-		<style>
-			body {
-				font-family: Helvetica;
-				font-size: 18px;
-			}
-
-			#current-slide,
-			#upcoming-slide,
-			#speaker-controls {
-				padding: 6px;
-				box-sizing: border-box;
-				-moz-box-sizing: border-box;
-			}
-
-			#current-slide iframe,
-			#upcoming-slide iframe {
-				width: 100%;
-				height: 100%;
-				border: 1px solid #ddd;
-			}
-
-			#current-slide .label,
-			#upcoming-slide .label {
-				position: absolute;
-				top: 10px;
-				left: 10px;
-				z-index: 2;
-			}
-
-			#connection-status {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				z-index: 20;
-				padding: 30% 20% 20% 20%;
-				font-size: 18px;
-				color: #222;
-				background: #fff;
-				text-align: center;
-				box-sizing: border-box;
-				line-height: 1.4;
-			}
-
-			.overlay-element {
-				height: 34px;
-				line-height: 34px;
-				padding: 0 10px;
-				text-shadow: none;
-				background: rgba( 220, 220, 220, 0.8 );
-				color: #222;
-				font-size: 14px;
-			}
-
-			.overlay-element.interactive:hover {
-				background: rgba( 220, 220, 220, 1 );
-			}
-
-			#current-slide {
-				position: absolute;
-				width: 60%;
-				height: 100%;
-				top: 0;
-				left: 0;
-				padding-right: 0;
-			}
-
-			#upcoming-slide {
-				position: absolute;
-				width: 40%;
-				height: 40%;
-				right: 0;
-				top: 0;
-			}
-
-			/* Speaker controls */
-			#speaker-controls {
-				position: absolute;
-				top: 40%;
-				right: 0;
-				width: 40%;
-				height: 60%;
-				overflow: auto;
-				font-size: 18px;
-			}
-
-				.speaker-controls-time.hidden,
-				.speaker-controls-notes.hidden {
-					display: none;
-				}
-
-				.speaker-controls-time .label,
-				.speaker-controls-pace .label,
-				.speaker-controls-notes .label {
-					text-transform: uppercase;
-					font-weight: normal;
-					font-size: 0.66em;
-					color: #666;
-					margin: 0;
-				}
-
-				.speaker-controls-time, .speaker-controls-pace {
-					border-bottom: 1px solid rgba( 200, 200, 200, 0.5 );
-					margin-bottom: 10px;
-					padding: 10px 16px;
-					padding-bottom: 20px;
-					cursor: pointer;
-				}
-
-				.speaker-controls-time .reset-button {
-					opacity: 0;
-					float: right;
-					color: #666;
-					text-decoration: none;
-				}
-				.speaker-controls-time:hover .reset-button {
-					opacity: 1;
-				}
-
-				.speaker-controls-time .timer,
-				.speaker-controls-time .clock {
-					width: 50%;
-				}
-
-				.speaker-controls-time .timer,
-				.speaker-controls-time .clock,
-				.speaker-controls-time .pacing .hours-value,
-				.speaker-controls-time .pacing .minutes-value,
-				.speaker-controls-time .pacing .seconds-value {
-					font-size: 1.9em;
-				}
-
-				.speaker-controls-time .timer {
-					float: left;
-				}
-
-				.speaker-controls-time .clock {
-					float: right;
-					text-align: right;
-				}
-
-				.speaker-controls-time span.mute {
-					opacity: 0.3;
-				}
-
-				.speaker-controls-time .pacing-title {
-					margin-top: 5px;
-				}
-
-				.speaker-controls-time .pacing.ahead {
-					color: blue;
-				}
-
-				.speaker-controls-time .pacing.on-track {
-					color: green;
-				}
-
-				.speaker-controls-time .pacing.behind {
-					color: red;
-				}
-
-				.speaker-controls-notes {
-					padding: 10px 16px;
-				}
-
-				.speaker-controls-notes .value {
-					margin-top: 5px;
-					line-height: 1.4;
-					font-size: 1.2em;
-				}
-
-			/* Layout selector\xA0*/
-			#speaker-layout {
-				position: absolute;
-				top: 10px;
-				right: 10px;
-				color: #222;
-				z-index: 10;
-			}
-				#speaker-layout select {
-					position: absolute;
-					width: 100%;
-					height: 100%;
-					top: 0;
-					left: 0;
-					border: 0;
-					box-shadow: 0;
-					cursor: pointer;
-					opacity: 0;
-
-					font-size: 1em;
-					background-color: transparent;
-
-					-moz-appearance: none;
-					-webkit-appearance: none;
-					-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-				}
-
-				#speaker-layout select:focus {
-					outline: none;
-					box-shadow: none;
-				}
-
-			.clear {
-				clear: both;
-			}
-
-			/* Speaker layout: Wide */
-			body[data-speaker-layout="wide"] #current-slide,
-			body[data-speaker-layout="wide"] #upcoming-slide {
-				width: 50%;
-				height: 45%;
-				padding: 6px;
-			}
-
-			body[data-speaker-layout="wide"] #current-slide {
-				top: 0;
-				left: 0;
-			}
-
-			body[data-speaker-layout="wide"] #upcoming-slide {
-				top: 0;
-				left: 50%;
-			}
-
-			body[data-speaker-layout="wide"] #speaker-controls {
-				top: 45%;
-				left: 0;
-				width: 100%;
-				height: 50%;
-				font-size: 1.25em;
-			}
-
-			/* Speaker layout: Tall */
-			body[data-speaker-layout="tall"] #current-slide,
-			body[data-speaker-layout="tall"] #upcoming-slide {
-				width: 45%;
-				height: 50%;
-				padding: 6px;
-			}
-
-			body[data-speaker-layout="tall"] #current-slide {
-				top: 0;
-				left: 0;
-			}
-
-			body[data-speaker-layout="tall"] #upcoming-slide {
-				top: 50%;
-				left: 0;
-			}
-
-			body[data-speaker-layout="tall"] #speaker-controls {
-				padding-top: 40px;
-				top: 0;
-				left: 45%;
-				width: 55%;
-				height: 100%;
-				font-size: 1.25em;
-			}
-
-			/* Speaker layout: Notes only */
-			body[data-speaker-layout="notes-only"] #current-slide,
-			body[data-speaker-layout="notes-only"] #upcoming-slide {
-				display: none;
-			}
-
-			body[data-speaker-layout="notes-only"] #speaker-controls {
-				padding-top: 40px;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				font-size: 1.25em;
-			}
-
-			@media screen and (max-width: 1080px) {
-				body[data-speaker-layout="default"] #speaker-controls {
-					font-size: 16px;
-				}
-			}
-
-			@media screen and (max-width: 900px) {
-				body[data-speaker-layout="default"] #speaker-controls {
-					font-size: 14px;
-				}
-			}
-
-			@media screen and (max-width: 800px) {
-				body[data-speaker-layout="default"] #speaker-controls {
-					font-size: 12px;
-				}
-			}
-
-		</style>
-	</head>
-
-	<body>
-
-		<div id="connection-status">Loading speaker view...</div>
-
-		<div id="current-slide"></div>
-		<div id="upcoming-slide"><span class="overlay-element label">Upcoming</span></div>
-		<div id="speaker-controls">
-			<div class="speaker-controls-time">
-				<h4 class="label">Time <span class="reset-button">Click to Reset</span></h4>
-				<div class="clock">
-					<span class="clock-value">0:00 AM</span>
-				</div>
-				<div class="timer">
-					<span class="hours-value">00</span><span class="minutes-value">:00</span><span class="seconds-value">:00</span>
-				</div>
-				<div class="clear"></div>
-
-				<h4 class="label pacing-title" style="display: none">Pacing – Time to finish current slide</h4>
-				<div class="pacing" style="display: none">
-					<span class="hours-value">00</span><span class="minutes-value">:00</span><span class="seconds-value">:00</span>
-				</div>
-			</div>
-
-			<div class="speaker-controls-notes hidden">
-				<h4 class="label">Notes</h4>
-				<div class="value"></div>
-			</div>
-		</div>
-		<div id="speaker-layout" class="overlay-element interactive">
-			<span class="speaker-layout-label"></span>
-			<select class="speaker-layout-dropdown"></select>
-		</div>
-
-		<script>
-
-			(function() {
-
-				var notes,
-					notesValue,
-					currentState,
-					currentSlide,
-					upcomingSlide,
-					layoutLabel,
-					layoutDropdown,
-					pendingCalls = {},
-					lastRevealApiCallId = 0,
-					connected = false
-
-				var connectionStatus = document.querySelector( '#connection-status' );
-
-				var SPEAKER_LAYOUTS = {
-					'default': 'Default',
-					'wide': 'Wide',
-					'tall': 'Tall',
-					'notes-only': 'Notes only'
-				};
-
-				setupLayout();
-
-				let openerOrigin;
-
-				try {
-					openerOrigin = window.opener.location.origin;
-				}
-				catch ( error ) { console.warn( error ) }
-
-				// In order to prevent XSS, the speaker view will only run if its
-				// opener has the same origin as itself
-				if( window.location.origin !== openerOrigin ) {
-					connectionStatus.innerHTML = 'Cross origin error.<br>The speaker window can only be opened from the same origin.';
-					return;
-				}
-
-				var connectionTimeout = setTimeout( function() {
-					connectionStatus.innerHTML = 'Error connecting to main window.<br>Please try closing and reopening the speaker view.';
-				}, 5000 );
-
-				window.addEventListener( 'message', function( event ) {
-
-					// Validate the origin of all messages to avoid parsing messages
-					// that aren't meant for us. Ignore when running off file:// so
-					// that the speaker view continues to work without a web server.
-					if( window.location.origin !== event.origin && window.location.origin !== 'file://' ) {
-						return
-					}
-
-					clearTimeout( connectionTimeout );
-					connectionStatus.style.display = 'none';
-
-					var data = JSON.parse( event.data );
-
-					// The overview mode is only useful to the reveal.js instance
-					// where navigation occurs so we don't sync it
-					if( data.state ) delete data.state.overview;
-
-					// Messages sent by the notes plugin inside of the main window
-					if( data && data.namespace === 'reveal-notes' ) {
-						if( data.type === 'connect' ) {
-							handleConnectMessage( data );
-						}
-						else if( data.type === 'state' ) {
-							handleStateMessage( data );
-						}
-						else if( data.type === 'return' ) {
-							pendingCalls[data.callId](data.result);
-							delete pendingCalls[data.callId];
-						}
-					}
-					// Messages sent by the reveal.js inside of the current slide preview
-					else if( data && data.namespace === 'reveal' ) {
-						const supportedEvents = [
-							'slidechanged',
-							'fragmentshown',
-							'fragmenthidden',
-							'paused',
-							'resumed',
-							'previewiframe',
-							'previewimage',
-							'previewvideo',
-							'closeoverlay'
-						];
-
-						if( /ready/.test( data.eventName ) ) {
-							// Send a message back to notify that the handshake is complete
-							window.opener.postMessage( JSON.stringify({ namespace: 'reveal-notes', type: 'connected'} ), '*' );
-						}
-						else if( supportedEvents.includes( data.eventName ) && currentState !== JSON.stringify( data.state ) ) {
-							dispatchStateToMainWindow( data.state );
-						}
-					}
-
-				} );
-
-				/**
-				 * Updates the presentation in the main window to match the state
-				 * of the presentation in the notes window.
-				 */
-				const dispatchStateToMainWindow = debounce(( state ) => {
-					window.opener.postMessage( JSON.stringify({ method: 'setState', args: [ state ]} ), '*' );
-				}, 500);
-
-				/**
-				 * Asynchronously calls the Reveal.js API of the main frame.
-				 */
-				function callRevealApi( methodName, methodArguments, callback ) {
-
-					var callId = ++lastRevealApiCallId;
-					pendingCalls[callId] = callback;
-					window.opener.postMessage( JSON.stringify( {
-						namespace: 'reveal-notes',
-						type: 'call',
-						callId: callId,
-						methodName: methodName,
-						arguments: methodArguments
-					} ), '*' );
-
-				}
-
-				/**
-				 * Called when the main window is trying to establish a
-				 * connection.
-				 */
-				function handleConnectMessage( data ) {
-
-					if( connected === false ) {
-						connected = true;
-
-						setupIframes( data );
-						setupKeyboard();
-						setupNotes();
-						setupTimer();
-						setupHeartbeat();
-					}
-
-				}
-
-				/**
-				 * Called when the main window sends an updated state.
-				 */
-				function handleStateMessage( data ) {
-
-					// Store the most recently set state to avoid circular loops
-					// applying the same state
-					currentState = JSON.stringify( data.state );
-
-					// No need for updating the notes in case of fragment changes
-					if ( data.notes ) {
-						notes.classList.remove( 'hidden' );
-						notesValue.style.whiteSpace = data.whitespace;
-						if( data.markdown ) {
-							notesValue.innerHTML = marked.parse( data.notes );
-						}
-						else {
-							notesValue.innerHTML = data.notes;
-						}
-					}
-					else {
-						notes.classList.add( 'hidden' );
-					}
-
-					// Don't show lightboxes in the upcoming slide
-					const { previewVideo, previewImage, previewIframe, ...upcomingState } = data.state;
-
-					// Update the note slides
-					currentSlide.contentWindow.postMessage( JSON.stringify({ method: 'setState', args: [ data.state ] }), '*' );
-					upcomingSlide.contentWindow.postMessage( JSON.stringify({ method: 'setState', args: [ upcomingState ] }), '*' );
-					upcomingSlide.contentWindow.postMessage( JSON.stringify({ method: 'next' }), '*' );
-
-				}
-
-				// Limit to max one state update per X ms
-				handleStateMessage = debounce( handleStateMessage, 200 );
-
-				/**
-				 * Forward keyboard events to the current slide window.
-				 * This enables keyboard events to work even if focus
-				 * isn't set on the current slide iframe.
-				 *
-				 * Block F5 default handling, it reloads and disconnects
-				 * the speaker notes window.
-				 */
-				function setupKeyboard() {
-
-					document.addEventListener( 'keydown', function( event ) {
-						if( event.keyCode === 116 || ( event.metaKey && event.keyCode === 82 ) ) {
-							event.preventDefault();
-							return false;
-						}
-						currentSlide.contentWindow.postMessage( JSON.stringify({ method: 'triggerKey', args: [ event.keyCode ] }), '*' );
-					} );
-
-				}
-
-				/**
-				 * Creates the preview iframes.
-				 */
-				function setupIframes( data ) {
-
-					var params = [
-						'receiver',
-						'progress=false',
-						'history=false',
-						'transition=none',
-						'autoSlide=0',
-						'backgroundTransition=none'
-					].join( '&' );
-
-					var urlSeparator = /\\?/.test(data.url) ? '&' : '?';
-					var hash = '#/' + data.state.indexh + '/' + data.state.indexv;
-					var currentURL = data.url + urlSeparator + params + '&scrollActivationWidth=false&postMessageEvents=true' + hash;
-					var upcomingURL = data.url + urlSeparator + params + '&scrollActivationWidth=false&controls=false' + hash;
-
-					currentSlide = document.createElement( 'iframe' );
-					currentSlide.setAttribute( 'width', 1280 );
-					currentSlide.setAttribute( 'height', 1024 );
-					currentSlide.setAttribute( 'src', currentURL );
-					document.querySelector( '#current-slide' ).appendChild( currentSlide );
-
-					upcomingSlide = document.createElement( 'iframe' );
-					upcomingSlide.setAttribute( 'width', 640 );
-					upcomingSlide.setAttribute( 'height', 512 );
-					upcomingSlide.setAttribute( 'src', upcomingURL );
-					document.querySelector( '#upcoming-slide' ).appendChild( upcomingSlide );
-
-				}
-
-				/**
-				 * Setup the notes UI.
-				 */
-				function setupNotes() {
-
-					notes = document.querySelector( '.speaker-controls-notes' );
-					notesValue = document.querySelector( '.speaker-controls-notes .value' );
-
-				}
-
-				/**
-				 * We send out a heartbeat at all times to ensure we can
-				 * reconnect with the main presentation window after reloads.
-				 */
-				function setupHeartbeat() {
-
-					setInterval( () => {
-						window.opener.postMessage( JSON.stringify({ namespace: 'reveal-notes', type: 'heartbeat'} ), '*' );
-					}, 1000 );
-
-				}
-
-				function getTimings( callback ) {
-
-					callRevealApi( 'getSlidesAttributes', [], function ( slideAttributes ) {
-						callRevealApi( 'getConfig', [], function ( config ) {
-							var totalTime = config.totalTime;
-							var minTimePerSlide = config.minimumTimePerSlide || 0;
-							var defaultTiming = config.defaultTiming;
-							if ((defaultTiming == null) && (totalTime == null)) {
-								callback(null);
-								return;
-							}
-							// Setting totalTime overrides defaultTiming
-							if (totalTime) {
-								defaultTiming = 0;
-							}
-							var timings = [];
-							for ( var i in slideAttributes ) {
-								var slide = slideAttributes[ i ];
-								var timing = defaultTiming;
-								if( slide.hasOwnProperty( 'data-timing' )) {
-									var t = slide[ 'data-timing' ];
-									timing = parseInt(t);
-									if( isNaN(timing) ) {
-										console.warn("Could not parse timing '" + t + "' of slide " + i + "; using default of " + defaultTiming);
-										timing = defaultTiming;
-									}
-								}
-								timings.push(timing);
-							}
-							if ( totalTime ) {
-								// After we've allocated time to individual slides, we summarize it and
-								// subtract it from the total time
-								var remainingTime = totalTime - timings.reduce( function(a, b) { return a + b; }, 0 );
-								// The remaining time is divided by the number of slides that have 0 seconds
-								// allocated at the moment, giving the average time-per-slide on the remaining slides
-								var remainingSlides = (timings.filter( function(x) { return x == 0 }) ).length
-								var timePerSlide = Math.round( remainingTime / remainingSlides, 0 )
-								// And now we replace every zero-value timing with that average
-								timings = timings.map( function(x) { return (x==0 ? timePerSlide : x) } );
-							}
-							var slidesUnderMinimum = timings.filter( function(x) { return (x < minTimePerSlide) } ).length
-							if ( slidesUnderMinimum ) {
-								message = "The pacing time for " + slidesUnderMinimum + " slide(s) is under the configured minimum of " + minTimePerSlide + " seconds. Check the data-timing attribute on individual slides, or consider increasing the totalTime or minimumTimePerSlide configuration options (or removing some slides).";
-								alert(message);
-							}
-							callback( timings );
-						} );
-					} );
-
-				}
-
-				/**
-				 * Return the number of seconds allocated for presenting
-				 * all slides up to and including this one.
-				 */
-				function getTimeAllocated( timings, callback ) {
-
-					callRevealApi( 'getSlidePastCount', [], function ( currentSlide ) {
-						var allocated = 0;
-						for (var i in timings.slice(0, currentSlide + 1)) {
-							allocated += timings[i];
-						}
-						callback( allocated );
-					} );
-
-				}
-
-				/**
-				 * Create the timer and clock and start updating them
-				 * at an interval.
-				 */
-				function setupTimer() {
-
-					var start = new Date(),
-					timeEl = document.querySelector( '.speaker-controls-time' ),
-					clockEl = timeEl.querySelector( '.clock-value' ),
-					hoursEl = timeEl.querySelector( '.hours-value' ),
-					minutesEl = timeEl.querySelector( '.minutes-value' ),
-					secondsEl = timeEl.querySelector( '.seconds-value' ),
-					pacingTitleEl = timeEl.querySelector( '.pacing-title' ),
-					pacingEl = timeEl.querySelector( '.pacing' ),
-					pacingHoursEl = pacingEl.querySelector( '.hours-value' ),
-					pacingMinutesEl = pacingEl.querySelector( '.minutes-value' ),
-					pacingSecondsEl = pacingEl.querySelector( '.seconds-value' );
-
-					var timings = null;
-					getTimings( function ( _timings ) {
-
-						timings = _timings;
-						if (_timings !== null) {
-							pacingTitleEl.style.removeProperty('display');
-							pacingEl.style.removeProperty('display');
-						}
-
-						// Update once directly
-						_updateTimer();
-
-						// Then update every second
-						setInterval( _updateTimer, 1000 );
-
-					} );
-
-
-					function _resetTimer() {
-
-						if (timings == null) {
-							start = new Date();
-							_updateTimer();
-						}
-						else {
-							// Reset timer to beginning of current slide
-							getTimeAllocated( timings, function ( slideEndTimingSeconds ) {
-								var slideEndTiming = slideEndTimingSeconds * 1000;
-								callRevealApi( 'getSlidePastCount', [], function ( currentSlide ) {
-									var currentSlideTiming = timings[currentSlide] * 1000;
-									var previousSlidesTiming = slideEndTiming - currentSlideTiming;
-									var now = new Date();
-									start = new Date(now.getTime() - previousSlidesTiming);
-									_updateTimer();
-								} );
-							} );
-						}
-
-					}
-
-					timeEl.addEventListener( 'click', function() {
-						_resetTimer();
-						return false;
-					} );
-
-					function _displayTime( hrEl, minEl, secEl, time) {
-
-						var sign = Math.sign(time) == -1 ? "-" : "";
-						time = Math.abs(Math.round(time / 1000));
-						var seconds = time % 60;
-						var minutes = Math.floor( time / 60 ) % 60 ;
-						var hours = Math.floor( time / ( 60 * 60 )) ;
-						hrEl.innerHTML = sign + zeroPadInteger( hours );
-						if (hours == 0) {
-							hrEl.classList.add( 'mute' );
-						}
-						else {
-							hrEl.classList.remove( 'mute' );
-						}
-						minEl.innerHTML = ':' + zeroPadInteger( minutes );
-						if (hours == 0 && minutes == 0) {
-							minEl.classList.add( 'mute' );
-						}
-						else {
-							minEl.classList.remove( 'mute' );
-						}
-						secEl.innerHTML = ':' + zeroPadInteger( seconds );
-					}
-
-					function _updateTimer() {
-
-						var diff, hours, minutes, seconds,
-						now = new Date();
-
-						diff = now.getTime() - start.getTime();
-
-						clockEl.innerHTML = now.toLocaleTimeString( 'en-US', { hour12: true, hour: '2-digit', minute:'2-digit' } );
-						_displayTime( hoursEl, minutesEl, secondsEl, diff );
-						if (timings !== null) {
-							_updatePacing(diff);
-						}
-
-					}
-
-					function _updatePacing(diff) {
-
-						getTimeAllocated( timings, function ( slideEndTimingSeconds ) {
-							var slideEndTiming = slideEndTimingSeconds * 1000;
-
-							callRevealApi( 'getSlidePastCount', [], function ( currentSlide ) {
-								var currentSlideTiming = timings[currentSlide] * 1000;
-								var timeLeftCurrentSlide = slideEndTiming - diff;
-								if (timeLeftCurrentSlide < 0) {
-									pacingEl.className = 'pacing behind';
-								}
-								else if (timeLeftCurrentSlide < currentSlideTiming) {
-									pacingEl.className = 'pacing on-track';
-								}
-								else {
-									pacingEl.className = 'pacing ahead';
-								}
-								_displayTime( pacingHoursEl, pacingMinutesEl, pacingSecondsEl, timeLeftCurrentSlide );
-							} );
-						} );
-					}
-
-				}
-
-				/**
-				 * Sets up the speaker view layout and layout selector.
-				 */
-				function setupLayout() {
-
-					layoutDropdown = document.querySelector( '.speaker-layout-dropdown' );
-					layoutLabel = document.querySelector( '.speaker-layout-label' );
-
-					// Render the list of available layouts
-					for( var id in SPEAKER_LAYOUTS ) {
-						var option = document.createElement( 'option' );
-						option.setAttribute( 'value', id );
-						option.textContent = SPEAKER_LAYOUTS[ id ];
-						layoutDropdown.appendChild( option );
-					}
-
-					// Monitor the dropdown for changes
-					layoutDropdown.addEventListener( 'change', function( event ) {
-
-						setLayout( layoutDropdown.value );
-
-					}, false );
-
-					// Restore any currently persisted layout
-					setLayout( getLayout() );
-
-				}
-
-				/**
-				 * Sets a new speaker view layout. The layout is persisted
-				 * in local storage.
-				 */
-				function setLayout( value ) {
-
-					var title = SPEAKER_LAYOUTS[ value ];
-
-					layoutLabel.innerHTML = 'Layout' + ( title ? ( ': ' + title ) : '' );
-					layoutDropdown.value = value;
-
-					document.body.setAttribute( 'data-speaker-layout', value );
-
-					// Persist locally
-					if( supportsLocalStorage() ) {
-						window.localStorage.setItem( 'reveal-speaker-layout', value );
-					}
-
-				}
-
-				/**
-				 * Returns the ID of the most recently set speaker layout
-				 * or our default layout if none has been set.
-				 */
-				function getLayout() {
-
-					if( supportsLocalStorage() ) {
-						var layout = window.localStorage.getItem( 'reveal-speaker-layout' );
-						if( layout ) {
-							return layout;
-						}
-					}
-
-					// Default to the first record in the layouts hash
-					for( var id in SPEAKER_LAYOUTS ) {
-						return id;
-					}
-
-				}
-
-				function supportsLocalStorage() {
-
-					try {
-						localStorage.setItem('test', 'test');
-						localStorage.removeItem('test');
-						return true;
-					}
-					catch( e ) {
-						return false;
-					}
-
-				}
-
-				function zeroPadInteger( num ) {
-
-					var str = '00' + parseInt( num );
-					return str.substring( str.length - 2 );
-
-				}
-
-				/**
-				 * Limits the frequency at which a function can be called.
-				 */
-				function debounce( fn, ms ) {
-
-					var lastTime = 0,
-						timeout;
-
-					return function() {
-
-						var args = arguments;
-						var context = this;
-
-						clearTimeout( timeout );
-
-						var timeSinceLastCall = Date.now() - lastTime;
-						if( timeSinceLastCall > ms ) {
-							fn.apply( context, args );
-							lastTime = Date.now();
-						}
-						else {
-							timeout = setTimeout( function() {
-								fn.apply( context, args );
-								lastTime = Date.now();
-							}, ms - timeSinceLastCall );
-						}
-
-					}
-
-				}
-
-			})();
-
-		<\/script>
-	</body>
+(function(e,t){typeof exports==`object`&&typeof module<`u`?module.exports=t():typeof define==`function`&&define.amd?define([],t):(e=typeof globalThis<`u`?globalThis:e||self,e.RevealNotes=t())})(this,function(){var e=`<!--\r
+	NOTE: You need to build the notes plugin after making changes to this file.\r
+-->\r
+<html lang="en">\r
+	<head>\r
+		<meta charset="utf-8">\r
+\r
+		<title>reveal.js - Speaker View</title>\r
+\r
+		<style>\r
+			body {\r
+				font-family: Helvetica;\r
+				font-size: 18px;\r
+			}\r
+\r
+			#current-slide,\r
+			#upcoming-slide,\r
+			#speaker-controls {\r
+				padding: 6px;\r
+				box-sizing: border-box;\r
+				-moz-box-sizing: border-box;\r
+			}\r
+\r
+			#current-slide iframe,\r
+			#upcoming-slide iframe {\r
+				width: 100%;\r
+				height: 100%;\r
+				border: 1px solid #ddd;\r
+			}\r
+\r
+			#current-slide .label,\r
+			#upcoming-slide .label {\r
+				position: absolute;\r
+				top: 10px;\r
+				left: 10px;\r
+				z-index: 2;\r
+			}\r
+\r
+			#connection-status {\r
+				position: absolute;\r
+				top: 0;\r
+				left: 0;\r
+				width: 100%;\r
+				height: 100%;\r
+				z-index: 20;\r
+				padding: 30% 20% 20% 20%;\r
+				font-size: 18px;\r
+				color: #222;\r
+				background: #fff;\r
+				text-align: center;\r
+				box-sizing: border-box;\r
+				line-height: 1.4;\r
+			}\r
+\r
+			.overlay-element {\r
+				height: 34px;\r
+				line-height: 34px;\r
+				padding: 0 10px;\r
+				text-shadow: none;\r
+				background: rgba( 220, 220, 220, 0.8 );\r
+				color: #222;\r
+				font-size: 14px;\r
+			}\r
+\r
+			.overlay-element.interactive:hover {\r
+				background: rgba( 220, 220, 220, 1 );\r
+			}\r
+\r
+			#current-slide {\r
+				position: absolute;\r
+				width: 60%;\r
+				height: 100%;\r
+				top: 0;\r
+				left: 0;\r
+				padding-right: 0;\r
+			}\r
+\r
+			#upcoming-slide {\r
+				position: absolute;\r
+				width: 40%;\r
+				height: 40%;\r
+				right: 0;\r
+				top: 0;\r
+			}\r
+\r
+			/* Speaker controls */\r
+			#speaker-controls {\r
+				position: absolute;\r
+				top: 40%;\r
+				right: 0;\r
+				width: 40%;\r
+				height: 60%;\r
+				overflow: auto;\r
+				font-size: 18px;\r
+			}\r
+\r
+				.speaker-controls-time.hidden,\r
+				.speaker-controls-notes.hidden {\r
+					display: none;\r
+				}\r
+\r
+				.speaker-controls-time .label,\r
+				.speaker-controls-pace .label,\r
+				.speaker-controls-notes .label {\r
+					text-transform: uppercase;\r
+					font-weight: normal;\r
+					font-size: 0.66em;\r
+					color: #666;\r
+					margin: 0;\r
+				}\r
+\r
+				.speaker-controls-time, .speaker-controls-pace {\r
+					border-bottom: 1px solid rgba( 200, 200, 200, 0.5 );\r
+					margin-bottom: 10px;\r
+					padding: 10px 16px;\r
+					padding-bottom: 20px;\r
+					cursor: pointer;\r
+				}\r
+\r
+				.speaker-controls-time .reset-button {\r
+					opacity: 0;\r
+					float: right;\r
+					color: #666;\r
+					text-decoration: none;\r
+				}\r
+				.speaker-controls-time:hover .reset-button {\r
+					opacity: 1;\r
+				}\r
+\r
+				.speaker-controls-time .timer,\r
+				.speaker-controls-time .clock {\r
+					width: 50%;\r
+				}\r
+\r
+				.speaker-controls-time .timer,\r
+				.speaker-controls-time .clock,\r
+				.speaker-controls-time .pacing .hours-value,\r
+				.speaker-controls-time .pacing .minutes-value,\r
+				.speaker-controls-time .pacing .seconds-value {\r
+					font-size: 1.9em;\r
+				}\r
+\r
+				.speaker-controls-time .timer {\r
+					float: left;\r
+				}\r
+\r
+				.speaker-controls-time .clock {\r
+					float: right;\r
+					text-align: right;\r
+				}\r
+\r
+				.speaker-controls-time span.mute {\r
+					opacity: 0.3;\r
+				}\r
+\r
+				.speaker-controls-time .pacing-title {\r
+					margin-top: 5px;\r
+				}\r
+\r
+				.speaker-controls-time .pacing.ahead {\r
+					color: blue;\r
+				}\r
+\r
+				.speaker-controls-time .pacing.on-track {\r
+					color: green;\r
+				}\r
+\r
+				.speaker-controls-time .pacing.behind {\r
+					color: red;\r
+				}\r
+\r
+				.speaker-controls-notes {\r
+					padding: 10px 16px;\r
+				}\r
+\r
+				.speaker-controls-notes .value {\r
+					margin-top: 5px;\r
+					line-height: 1.4;\r
+					font-size: 1.2em;\r
+				}\r
+\r
+			/* Layout selector\xA0*/\r
+			#speaker-layout {\r
+				position: absolute;\r
+				top: 10px;\r
+				right: 10px;\r
+				color: #222;\r
+				z-index: 10;\r
+			}\r
+				#speaker-layout select {\r
+					position: absolute;\r
+					width: 100%;\r
+					height: 100%;\r
+					top: 0;\r
+					left: 0;\r
+					border: 0;\r
+					box-shadow: 0;\r
+					cursor: pointer;\r
+					opacity: 0;\r
+\r
+					font-size: 1em;\r
+					background-color: transparent;\r
+\r
+					-moz-appearance: none;\r
+					-webkit-appearance: none;\r
+					-webkit-tap-highlight-color: rgba(0, 0, 0, 0);\r
+				}\r
+\r
+				#speaker-layout select:focus {\r
+					outline: none;\r
+					box-shadow: none;\r
+				}\r
+\r
+			.clear {\r
+				clear: both;\r
+			}\r
+\r
+			/* Speaker layout: Wide */\r
+			body[data-speaker-layout="wide"] #current-slide,\r
+			body[data-speaker-layout="wide"] #upcoming-slide {\r
+				width: 50%;\r
+				height: 45%;\r
+				padding: 6px;\r
+			}\r
+\r
+			body[data-speaker-layout="wide"] #current-slide {\r
+				top: 0;\r
+				left: 0;\r
+			}\r
+\r
+			body[data-speaker-layout="wide"] #upcoming-slide {\r
+				top: 0;\r
+				left: 50%;\r
+			}\r
+\r
+			body[data-speaker-layout="wide"] #speaker-controls {\r
+				top: 45%;\r
+				left: 0;\r
+				width: 100%;\r
+				height: 50%;\r
+				font-size: 1.25em;\r
+			}\r
+\r
+			/* Speaker layout: Tall */\r
+			body[data-speaker-layout="tall"] #current-slide,\r
+			body[data-speaker-layout="tall"] #upcoming-slide {\r
+				width: 45%;\r
+				height: 50%;\r
+				padding: 6px;\r
+			}\r
+\r
+			body[data-speaker-layout="tall"] #current-slide {\r
+				top: 0;\r
+				left: 0;\r
+			}\r
+\r
+			body[data-speaker-layout="tall"] #upcoming-slide {\r
+				top: 50%;\r
+				left: 0;\r
+			}\r
+\r
+			body[data-speaker-layout="tall"] #speaker-controls {\r
+				padding-top: 40px;\r
+				top: 0;\r
+				left: 45%;\r
+				width: 55%;\r
+				height: 100%;\r
+				font-size: 1.25em;\r
+			}\r
+\r
+			/* Speaker layout: Notes only */\r
+			body[data-speaker-layout="notes-only"] #current-slide,\r
+			body[data-speaker-layout="notes-only"] #upcoming-slide {\r
+				display: none;\r
+			}\r
+\r
+			body[data-speaker-layout="notes-only"] #speaker-controls {\r
+				padding-top: 40px;\r
+				top: 0;\r
+				left: 0;\r
+				width: 100%;\r
+				height: 100%;\r
+				font-size: 1.25em;\r
+			}\r
+\r
+			@media screen and (max-width: 1080px) {\r
+				body[data-speaker-layout="default"] #speaker-controls {\r
+					font-size: 16px;\r
+				}\r
+			}\r
+\r
+			@media screen and (max-width: 900px) {\r
+				body[data-speaker-layout="default"] #speaker-controls {\r
+					font-size: 14px;\r
+				}\r
+			}\r
+\r
+			@media screen and (max-width: 800px) {\r
+				body[data-speaker-layout="default"] #speaker-controls {\r
+					font-size: 12px;\r
+				}\r
+			}\r
+\r
+		</style>\r
+	</head>\r
+\r
+	<body>\r
+\r
+		<div id="connection-status">Loading speaker view...</div>\r
+\r
+		<div id="current-slide"></div>\r
+		<div id="upcoming-slide"><span class="overlay-element label">Upcoming</span></div>\r
+		<div id="speaker-controls">\r
+			<div class="speaker-controls-time">\r
+				<h4 class="label">Time <span class="reset-button">Click to Reset</span></h4>\r
+				<div class="clock">\r
+					<span class="clock-value">0:00 AM</span>\r
+				</div>\r
+				<div class="timer">\r
+					<span class="hours-value">00</span><span class="minutes-value">:00</span><span class="seconds-value">:00</span>\r
+				</div>\r
+				<div class="clear"></div>\r
+\r
+				<h4 class="label pacing-title" style="display: none">Pacing – Time to finish current slide</h4>\r
+				<div class="pacing" style="display: none">\r
+					<span class="hours-value">00</span><span class="minutes-value">:00</span><span class="seconds-value">:00</span>\r
+				</div>\r
+			</div>\r
+\r
+			<div class="speaker-controls-notes hidden">\r
+				<h4 class="label">Notes</h4>\r
+				<div class="value"></div>\r
+			</div>\r
+		</div>\r
+		<div id="speaker-layout" class="overlay-element interactive">\r
+			<span class="speaker-layout-label"></span>\r
+			<select class="speaker-layout-dropdown"></select>\r
+		</div>\r
+\r
+		<script>\r
+\r
+			(function() {\r
+\r
+				var notes,\r
+					notesValue,\r
+					currentState,\r
+					currentSlide,\r
+					upcomingSlide,\r
+					layoutLabel,\r
+					layoutDropdown,\r
+					pendingCalls = {},\r
+					lastRevealApiCallId = 0,\r
+					connected = false\r
+\r
+				var connectionStatus = document.querySelector( '#connection-status' );\r
+\r
+				var SPEAKER_LAYOUTS = {\r
+					'default': 'Default',\r
+					'wide': 'Wide',\r
+					'tall': 'Tall',\r
+					'notes-only': 'Notes only'\r
+				};\r
+\r
+				setupLayout();\r
+\r
+				let openerOrigin;\r
+\r
+				try {\r
+					openerOrigin = window.opener.location.origin;\r
+				}\r
+				catch ( error ) { console.warn( error ) }\r
+\r
+				// In order to prevent XSS, the speaker view will only run if its\r
+				// opener has the same origin as itself\r
+				if( window.location.origin !== openerOrigin ) {\r
+					connectionStatus.innerHTML = 'Cross origin error.<br>The speaker window can only be opened from the same origin.';\r
+					return;\r
+				}\r
+\r
+				var connectionTimeout = setTimeout( function() {\r
+					connectionStatus.innerHTML = 'Error connecting to main window.<br>Please try closing and reopening the speaker view.';\r
+				}, 5000 );\r
+\r
+				window.addEventListener( 'message', function( event ) {\r
+\r
+					// Validate the origin of all messages to avoid parsing messages\r
+					// that aren't meant for us. Ignore when running off file:// so\r
+					// that the speaker view continues to work without a web server.\r
+					if( window.location.origin !== event.origin && window.location.origin !== 'file://' ) {\r
+						return\r
+					}\r
+\r
+					clearTimeout( connectionTimeout );\r
+					connectionStatus.style.display = 'none';\r
+\r
+					var data = JSON.parse( event.data );\r
+\r
+					// The overview mode is only useful to the reveal.js instance\r
+					// where navigation occurs so we don't sync it\r
+					if( data.state ) delete data.state.overview;\r
+\r
+					// Messages sent by the notes plugin inside of the main window\r
+					if( data && data.namespace === 'reveal-notes' ) {\r
+						if( data.type === 'connect' ) {\r
+							handleConnectMessage( data );\r
+						}\r
+						else if( data.type === 'state' ) {\r
+							handleStateMessage( data );\r
+						}\r
+						else if( data.type === 'return' ) {\r
+							pendingCalls[data.callId](data.result);\r
+							delete pendingCalls[data.callId];\r
+						}\r
+					}\r
+					// Messages sent by the reveal.js inside of the current slide preview\r
+					else if( data && data.namespace === 'reveal' ) {\r
+						const supportedEvents = [\r
+							'slidechanged',\r
+							'fragmentshown',\r
+							'fragmenthidden',\r
+							'paused',\r
+							'resumed',\r
+							'previewiframe',\r
+							'previewimage',\r
+							'previewvideo',\r
+							'closeoverlay'\r
+						];\r
+\r
+						if( /ready/.test( data.eventName ) ) {\r
+							// Send a message back to notify that the handshake is complete\r
+							window.opener.postMessage( JSON.stringify({ namespace: 'reveal-notes', type: 'connected'} ), '*' );\r
+						}\r
+						else if( supportedEvents.includes( data.eventName ) && currentState !== JSON.stringify( data.state ) ) {\r
+							dispatchStateToMainWindow( data.state );\r
+						}\r
+					}\r
+\r
+				} );\r
+\r
+				/**\r
+				 * Updates the presentation in the main window to match the state\r
+				 * of the presentation in the notes window.\r
+				 */\r
+				const dispatchStateToMainWindow = debounce(( state ) => {\r
+					window.opener.postMessage( JSON.stringify({ method: 'setState', args: [ state ]} ), '*' );\r
+				}, 500);\r
+\r
+				/**\r
+				 * Asynchronously calls the Reveal.js API of the main frame.\r
+				 */\r
+				function callRevealApi( methodName, methodArguments, callback ) {\r
+\r
+					var callId = ++lastRevealApiCallId;\r
+					pendingCalls[callId] = callback;\r
+					window.opener.postMessage( JSON.stringify( {\r
+						namespace: 'reveal-notes',\r
+						type: 'call',\r
+						callId: callId,\r
+						methodName: methodName,\r
+						arguments: methodArguments\r
+					} ), '*' );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Called when the main window is trying to establish a\r
+				 * connection.\r
+				 */\r
+				function handleConnectMessage( data ) {\r
+\r
+					if( connected === false ) {\r
+						connected = true;\r
+\r
+						setupIframes( data );\r
+						setupKeyboard();\r
+						setupNotes();\r
+						setupTimer();\r
+						setupHeartbeat();\r
+					}\r
+\r
+				}\r
+\r
+				/**\r
+				 * Called when the main window sends an updated state.\r
+				 */\r
+				function handleStateMessage( data ) {\r
+\r
+					// Store the most recently set state to avoid circular loops\r
+					// applying the same state\r
+					currentState = JSON.stringify( data.state );\r
+\r
+					// No need for updating the notes in case of fragment changes\r
+					if ( data.notes ) {\r
+						notes.classList.remove( 'hidden' );\r
+						notesValue.style.whiteSpace = data.whitespace;\r
+						if( data.markdown ) {\r
+							notesValue.innerHTML = marked.parse( data.notes );\r
+						}\r
+						else {\r
+							notesValue.innerHTML = data.notes;\r
+						}\r
+					}\r
+					else {\r
+						notes.classList.add( 'hidden' );\r
+					}\r
+\r
+					// Don't show lightboxes in the upcoming slide\r
+					const { previewVideo, previewImage, previewIframe, ...upcomingState } = data.state;\r
+\r
+					// Update the note slides\r
+					currentSlide.contentWindow.postMessage( JSON.stringify({ method: 'setState', args: [ data.state ] }), '*' );\r
+					upcomingSlide.contentWindow.postMessage( JSON.stringify({ method: 'setState', args: [ upcomingState ] }), '*' );\r
+					upcomingSlide.contentWindow.postMessage( JSON.stringify({ method: 'next' }), '*' );\r
+\r
+				}\r
+\r
+				// Limit to max one state update per X ms\r
+				handleStateMessage = debounce( handleStateMessage, 200 );\r
+\r
+				/**\r
+				 * Forward keyboard events to the current slide window.\r
+				 * This enables keyboard events to work even if focus\r
+				 * isn't set on the current slide iframe.\r
+				 *\r
+				 * Block F5 default handling, it reloads and disconnects\r
+				 * the speaker notes window.\r
+				 */\r
+				function setupKeyboard() {\r
+\r
+					document.addEventListener( 'keydown', function( event ) {\r
+						if( event.keyCode === 116 || ( event.metaKey && event.keyCode === 82 ) ) {\r
+							event.preventDefault();\r
+							return false;\r
+						}\r
+						currentSlide.contentWindow.postMessage( JSON.stringify({ method: 'triggerKey', args: [ event.keyCode ] }), '*' );\r
+					} );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Creates the preview iframes.\r
+				 */\r
+				function setupIframes( data ) {\r
+\r
+					var params = [\r
+						'receiver',\r
+						'progress=false',\r
+						'history=false',\r
+						'transition=none',\r
+						'autoSlide=0',\r
+						'backgroundTransition=none'\r
+					].join( '&' );\r
+\r
+					var urlSeparator = /\\?/.test(data.url) ? '&' : '?';\r
+					var hash = '#/' + data.state.indexh + '/' + data.state.indexv;\r
+					var currentURL = data.url + urlSeparator + params + '&scrollActivationWidth=false&postMessageEvents=true' + hash;\r
+					var upcomingURL = data.url + urlSeparator + params + '&scrollActivationWidth=false&controls=false' + hash;\r
+\r
+					currentSlide = document.createElement( 'iframe' );\r
+					currentSlide.setAttribute( 'width', 1280 );\r
+					currentSlide.setAttribute( 'height', 1024 );\r
+					currentSlide.setAttribute( 'src', currentURL );\r
+					document.querySelector( '#current-slide' ).appendChild( currentSlide );\r
+\r
+					upcomingSlide = document.createElement( 'iframe' );\r
+					upcomingSlide.setAttribute( 'width', 640 );\r
+					upcomingSlide.setAttribute( 'height', 512 );\r
+					upcomingSlide.setAttribute( 'src', upcomingURL );\r
+					document.querySelector( '#upcoming-slide' ).appendChild( upcomingSlide );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Setup the notes UI.\r
+				 */\r
+				function setupNotes() {\r
+\r
+					notes = document.querySelector( '.speaker-controls-notes' );\r
+					notesValue = document.querySelector( '.speaker-controls-notes .value' );\r
+\r
+				}\r
+\r
+				/**\r
+				 * We send out a heartbeat at all times to ensure we can\r
+				 * reconnect with the main presentation window after reloads.\r
+				 */\r
+				function setupHeartbeat() {\r
+\r
+					setInterval( () => {\r
+						window.opener.postMessage( JSON.stringify({ namespace: 'reveal-notes', type: 'heartbeat'} ), '*' );\r
+					}, 1000 );\r
+\r
+				}\r
+\r
+				function getTimings( callback ) {\r
+\r
+					callRevealApi( 'getSlidesAttributes', [], function ( slideAttributes ) {\r
+						callRevealApi( 'getConfig', [], function ( config ) {\r
+							var totalTime = config.totalTime;\r
+							var minTimePerSlide = config.minimumTimePerSlide || 0;\r
+							var defaultTiming = config.defaultTiming;\r
+							if ((defaultTiming == null) && (totalTime == null)) {\r
+								callback(null);\r
+								return;\r
+							}\r
+							// Setting totalTime overrides defaultTiming\r
+							if (totalTime) {\r
+								defaultTiming = 0;\r
+							}\r
+							var timings = [];\r
+							for ( var i in slideAttributes ) {\r
+								var slide = slideAttributes[ i ];\r
+								var timing = defaultTiming;\r
+								if( slide.hasOwnProperty( 'data-timing' )) {\r
+									var t = slide[ 'data-timing' ];\r
+									timing = parseInt(t);\r
+									if( isNaN(timing) ) {\r
+										console.warn("Could not parse timing '" + t + "' of slide " + i + "; using default of " + defaultTiming);\r
+										timing = defaultTiming;\r
+									}\r
+								}\r
+								timings.push(timing);\r
+							}\r
+							if ( totalTime ) {\r
+								// After we've allocated time to individual slides, we summarize it and\r
+								// subtract it from the total time\r
+								var remainingTime = totalTime - timings.reduce( function(a, b) { return a + b; }, 0 );\r
+								// The remaining time is divided by the number of slides that have 0 seconds\r
+								// allocated at the moment, giving the average time-per-slide on the remaining slides\r
+								var remainingSlides = (timings.filter( function(x) { return x == 0 }) ).length\r
+								var timePerSlide = Math.round( remainingTime / remainingSlides, 0 )\r
+								// And now we replace every zero-value timing with that average\r
+								timings = timings.map( function(x) { return (x==0 ? timePerSlide : x) } );\r
+							}\r
+							var slidesUnderMinimum = timings.filter( function(x) { return (x < minTimePerSlide) } ).length\r
+							if ( slidesUnderMinimum ) {\r
+								message = "The pacing time for " + slidesUnderMinimum + " slide(s) is under the configured minimum of " + minTimePerSlide + " seconds. Check the data-timing attribute on individual slides, or consider increasing the totalTime or minimumTimePerSlide configuration options (or removing some slides).";\r
+								alert(message);\r
+							}\r
+							callback( timings );\r
+						} );\r
+					} );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Return the number of seconds allocated for presenting\r
+				 * all slides up to and including this one.\r
+				 */\r
+				function getTimeAllocated( timings, callback ) {\r
+\r
+					callRevealApi( 'getSlidePastCount', [], function ( currentSlide ) {\r
+						var allocated = 0;\r
+						for (var i in timings.slice(0, currentSlide + 1)) {\r
+							allocated += timings[i];\r
+						}\r
+						callback( allocated );\r
+					} );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Create the timer and clock and start updating them\r
+				 * at an interval.\r
+				 */\r
+				function setupTimer() {\r
+\r
+					var start = new Date(),\r
+					timeEl = document.querySelector( '.speaker-controls-time' ),\r
+					clockEl = timeEl.querySelector( '.clock-value' ),\r
+					hoursEl = timeEl.querySelector( '.hours-value' ),\r
+					minutesEl = timeEl.querySelector( '.minutes-value' ),\r
+					secondsEl = timeEl.querySelector( '.seconds-value' ),\r
+					pacingTitleEl = timeEl.querySelector( '.pacing-title' ),\r
+					pacingEl = timeEl.querySelector( '.pacing' ),\r
+					pacingHoursEl = pacingEl.querySelector( '.hours-value' ),\r
+					pacingMinutesEl = pacingEl.querySelector( '.minutes-value' ),\r
+					pacingSecondsEl = pacingEl.querySelector( '.seconds-value' );\r
+\r
+					var timings = null;\r
+					getTimings( function ( _timings ) {\r
+\r
+						timings = _timings;\r
+						if (_timings !== null) {\r
+							pacingTitleEl.style.removeProperty('display');\r
+							pacingEl.style.removeProperty('display');\r
+						}\r
+\r
+						// Update once directly\r
+						_updateTimer();\r
+\r
+						// Then update every second\r
+						setInterval( _updateTimer, 1000 );\r
+\r
+					} );\r
+\r
+\r
+					function _resetTimer() {\r
+\r
+						if (timings == null) {\r
+							start = new Date();\r
+							_updateTimer();\r
+						}\r
+						else {\r
+							// Reset timer to beginning of current slide\r
+							getTimeAllocated( timings, function ( slideEndTimingSeconds ) {\r
+								var slideEndTiming = slideEndTimingSeconds * 1000;\r
+								callRevealApi( 'getSlidePastCount', [], function ( currentSlide ) {\r
+									var currentSlideTiming = timings[currentSlide] * 1000;\r
+									var previousSlidesTiming = slideEndTiming - currentSlideTiming;\r
+									var now = new Date();\r
+									start = new Date(now.getTime() - previousSlidesTiming);\r
+									_updateTimer();\r
+								} );\r
+							} );\r
+						}\r
+\r
+					}\r
+\r
+					timeEl.addEventListener( 'click', function() {\r
+						_resetTimer();\r
+						return false;\r
+					} );\r
+\r
+					function _displayTime( hrEl, minEl, secEl, time) {\r
+\r
+						var sign = Math.sign(time) == -1 ? "-" : "";\r
+						time = Math.abs(Math.round(time / 1000));\r
+						var seconds = time % 60;\r
+						var minutes = Math.floor( time / 60 ) % 60 ;\r
+						var hours = Math.floor( time / ( 60 * 60 )) ;\r
+						hrEl.innerHTML = sign + zeroPadInteger( hours );\r
+						if (hours == 0) {\r
+							hrEl.classList.add( 'mute' );\r
+						}\r
+						else {\r
+							hrEl.classList.remove( 'mute' );\r
+						}\r
+						minEl.innerHTML = ':' + zeroPadInteger( minutes );\r
+						if (hours == 0 && minutes == 0) {\r
+							minEl.classList.add( 'mute' );\r
+						}\r
+						else {\r
+							minEl.classList.remove( 'mute' );\r
+						}\r
+						secEl.innerHTML = ':' + zeroPadInteger( seconds );\r
+					}\r
+\r
+					function _updateTimer() {\r
+\r
+						var diff, hours, minutes, seconds,\r
+						now = new Date();\r
+\r
+						diff = now.getTime() - start.getTime();\r
+\r
+						clockEl.innerHTML = now.toLocaleTimeString( 'en-US', { hour12: true, hour: '2-digit', minute:'2-digit' } );\r
+						_displayTime( hoursEl, minutesEl, secondsEl, diff );\r
+						if (timings !== null) {\r
+							_updatePacing(diff);\r
+						}\r
+\r
+					}\r
+\r
+					function _updatePacing(diff) {\r
+\r
+						getTimeAllocated( timings, function ( slideEndTimingSeconds ) {\r
+							var slideEndTiming = slideEndTimingSeconds * 1000;\r
+\r
+							callRevealApi( 'getSlidePastCount', [], function ( currentSlide ) {\r
+								var currentSlideTiming = timings[currentSlide] * 1000;\r
+								var timeLeftCurrentSlide = slideEndTiming - diff;\r
+								if (timeLeftCurrentSlide < 0) {\r
+									pacingEl.className = 'pacing behind';\r
+								}\r
+								else if (timeLeftCurrentSlide < currentSlideTiming) {\r
+									pacingEl.className = 'pacing on-track';\r
+								}\r
+								else {\r
+									pacingEl.className = 'pacing ahead';\r
+								}\r
+								_displayTime( pacingHoursEl, pacingMinutesEl, pacingSecondsEl, timeLeftCurrentSlide );\r
+							} );\r
+						} );\r
+					}\r
+\r
+				}\r
+\r
+				/**\r
+				 * Sets up the speaker view layout and layout selector.\r
+				 */\r
+				function setupLayout() {\r
+\r
+					layoutDropdown = document.querySelector( '.speaker-layout-dropdown' );\r
+					layoutLabel = document.querySelector( '.speaker-layout-label' );\r
+\r
+					// Render the list of available layouts\r
+					for( var id in SPEAKER_LAYOUTS ) {\r
+						var option = document.createElement( 'option' );\r
+						option.setAttribute( 'value', id );\r
+						option.textContent = SPEAKER_LAYOUTS[ id ];\r
+						layoutDropdown.appendChild( option );\r
+					}\r
+\r
+					// Monitor the dropdown for changes\r
+					layoutDropdown.addEventListener( 'change', function( event ) {\r
+\r
+						setLayout( layoutDropdown.value );\r
+\r
+					}, false );\r
+\r
+					// Restore any currently persisted layout\r
+					setLayout( getLayout() );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Sets a new speaker view layout. The layout is persisted\r
+				 * in local storage.\r
+				 */\r
+				function setLayout( value ) {\r
+\r
+					var title = SPEAKER_LAYOUTS[ value ];\r
+\r
+					layoutLabel.innerHTML = 'Layout' + ( title ? ( ': ' + title ) : '' );\r
+					layoutDropdown.value = value;\r
+\r
+					document.body.setAttribute( 'data-speaker-layout', value );\r
+\r
+					// Persist locally\r
+					if( supportsLocalStorage() ) {\r
+						window.localStorage.setItem( 'reveal-speaker-layout', value );\r
+					}\r
+\r
+				}\r
+\r
+				/**\r
+				 * Returns the ID of the most recently set speaker layout\r
+				 * or our default layout if none has been set.\r
+				 */\r
+				function getLayout() {\r
+\r
+					if( supportsLocalStorage() ) {\r
+						var layout = window.localStorage.getItem( 'reveal-speaker-layout' );\r
+						if( layout ) {\r
+							return layout;\r
+						}\r
+					}\r
+\r
+					// Default to the first record in the layouts hash\r
+					for( var id in SPEAKER_LAYOUTS ) {\r
+						return id;\r
+					}\r
+\r
+				}\r
+\r
+				function supportsLocalStorage() {\r
+\r
+					try {\r
+						localStorage.setItem('test', 'test');\r
+						localStorage.removeItem('test');\r
+						return true;\r
+					}\r
+					catch( e ) {\r
+						return false;\r
+					}\r
+\r
+				}\r
+\r
+				function zeroPadInteger( num ) {\r
+\r
+					var str = '00' + parseInt( num );\r
+					return str.substring( str.length - 2 );\r
+\r
+				}\r
+\r
+				/**\r
+				 * Limits the frequency at which a function can be called.\r
+				 */\r
+				function debounce( fn, ms ) {\r
+\r
+					var lastTime = 0,\r
+						timeout;\r
+\r
+					return function() {\r
+\r
+						var args = arguments;\r
+						var context = this;\r
+\r
+						clearTimeout( timeout );\r
+\r
+						var timeSinceLastCall = Date.now() - lastTime;\r
+						if( timeSinceLastCall > ms ) {\r
+							fn.apply( context, args );\r
+							lastTime = Date.now();\r
+						}\r
+						else {\r
+							timeout = setTimeout( function() {\r
+								fn.apply( context, args );\r
+								lastTime = Date.now();\r
+							}, ms - timeSinceLastCall );\r
+						}\r
+\r
+					}\r
+\r
+				}\r
+\r
+			})();\r
+\r
+		<\/script>\r
+	</body>\r
 </html>`;function t(){return{async:!1,breaks:!1,extensions:null,gfm:!0,hooks:null,pedantic:!1,renderer:null,silent:!1,tokenizer:null,walkTokens:null}}var n=t();function r(e){n=e}var i={exec:()=>null};function a(e,t=``){let n=typeof e==`string`?e:e.source,r={replace:(e,t)=>{let i=typeof t==`string`?t:t.source;return i=i.replace(s.caret,`$1`),n=n.replace(e,i),r},getRegex:()=>new RegExp(n,t)};return r}var o=(()=>{try{return!0}catch{return!1}})(),s={codeRemoveIndent:/^(?: {1,4}| {0,3}\t)/gm,outputLinkReplace:/\\([\[\]])/g,indentCodeCompensation:/^(\s+)(?:```)/,beginningSpace:/^\s+/,endingHash:/#$/,startingSpaceChar:/^ /,endingSpaceChar:/ $/,nonSpaceChar:/[^ ]/,newLineCharGlobal:/\n/g,tabCharGlobal:/\t/g,multipleSpaceGlobal:/\s+/g,blankLine:/^[ \t]*$/,doubleBlankLine:/\n[ \t]*\n[ \t]*$/,blockquoteStart:/^ {0,3}>/,blockquoteSetextReplace:/\n {0,3}((?:=+|-+) *)(?=\n|$)/g,blockquoteSetextReplace2:/^ {0,3}>[ \t]?/gm,listReplaceNesting:/^ {1,4}(?=( {4})*[^ ])/g,listIsTask:/^\[[ xX]\] +\S/,listReplaceTask:/^\[[ xX]\] +/,listTaskCheckbox:/\[[ xX]\]/,anyLine:/\n.*\n/,hrefBrackets:/^<(.*)>$/,tableDelimiter:/[:|]/,tableAlignChars:/^\||\| *$/g,tableRowBlankLine:/\n[ \t]*$/,tableAlignRight:/^ *-+: *$/,tableAlignCenter:/^ *:-+: *$/,tableAlignLeft:/^ *:-+ *$/,startATag:/^<a /i,endATag:/^<\/a>/i,startPreScriptTag:/^<(pre|code|kbd|script)(\s|>)/i,endPreScriptTag:/^<\/(pre|code|kbd|script)(\s|>)/i,startAngleBracket:/^</,endAngleBracket:/>$/,pedanticHrefTitle:/^([^'"]*[^\s])\s+(['"])(.*)\2/,unicodeAlphaNumeric:/[\p{L}\p{N}]/u,escapeTest:/[&<>"']/,escapeReplace:/[&<>"']/g,escapeTestNoEncode:/[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/,escapeReplaceNoEncode:/[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g,caret:/(^|[^\[])\^/g,percentDecode:/%25/g,findPipe:/\|/g,splitPipe:/ \|/,slashPipe:/\\\|/g,carriageReturn:/\r\n|\r/g,spaceLine:/^ +$/gm,notSpaceStart:/^\S*/,endingNewline:/\n$/,listItemRegex:e=>RegExp(`^( {0,3}${e})((?:[	 ][^\\n]*)?(?:\\n|$))`),nextBulletRegex:e=>RegExp(`^ {0,${Math.min(3,e-1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`),hrRegex:e=>RegExp(`^ {0,${Math.min(3,e-1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`),fencesBeginRegex:e=>RegExp(`^ {0,${Math.min(3,e-1)}}(?:\`\`\`|~~~)`),headingBeginRegex:e=>RegExp(`^ {0,${Math.min(3,e-1)}}#`),htmlBeginRegex:e=>RegExp(`^ {0,${Math.min(3,e-1)}}<(?:[a-z].*>|!--)`,`i`),blockquoteBeginRegex:e=>RegExp(`^ {0,${Math.min(3,e-1)}}>`)},c=/^(?:[ \t]*(?:\n|$))+/,l=/^((?: {4}| {0,3}\t)[^\n]+(?:\n(?:[ \t]*(?:\n|$))*)?)+/,u=/^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/,d=/^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/,f=/^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/,p=/ {0,3}(?:[*+-]|\d{1,9}[.)])/,m=/^(?!bull |blockCode|fences|blockquote|heading|html|table)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html|table))+?)\n {0,3}(=+|-+) *(?:\n+|$)/,h=a(m).replace(/bull/g,p).replace(/blockCode/g,/(?: {4}| {0,3}\t)/).replace(/fences/g,/ {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g,/ {0,3}>/).replace(/heading/g,/ {0,3}#{1,6}/).replace(/html/g,/ {0,3}<[^\n>]+>\n/).replace(/\|table/g,``).getRegex(),ee=a(m).replace(/bull/g,p).replace(/blockCode/g,/(?: {4}| {0,3}\t)/).replace(/fences/g,/ {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g,/ {0,3}>/).replace(/heading/g,/ {0,3}#{1,6}/).replace(/html/g,/ {0,3}<[^\n>]+>\n/).replace(/table/g,/ {0,3}\|?(?:[:\- ]*\|)+[\:\- ]*\n/).getRegex(),g=/^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,te=/^[^\n]+/,_=/(?!\s*\])(?:\\[\s\S]|[^\[\]\\])+/,ne=a(/^ {0,3}\[(label)\]: *(?:\n[ \t]*)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n[ \t]*)?| *\n[ \t]*)(title))? *(?:\n+|$)/).replace(`label`,_).replace(`title`,/(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex(),re=a(/^(bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g,p).getRegex(),v=`address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul`,y=/<!--(?:-?>|[\s\S]*?(?:-->|$))/,ie=a(`^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n[ 	]*)+\\n|$))`,`i`).replace(`comment`,y).replace(`tag`,v).replace(`attribute`,/ +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(),b=a(g).replace(`hr`,d).replace(`heading`,` {0,3}#{1,6}(?:\\s|$)`).replace(`|lheading`,``).replace(`|table`,``).replace(`blockquote`,` {0,3}>`).replace(`fences`," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace(`list`,` {0,3}(?:[*+-]|1[.)])[ \\t]`).replace(`html`,`</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)`).replace(`tag`,v).getRegex(),x={blockquote:a(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace(`paragraph`,b).getRegex(),code:l,def:ne,fences:u,heading:f,hr:d,html:ie,lheading:h,list:re,newline:c,paragraph:b,table:i,text:te},S=a(`^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)`).replace(`hr`,d).replace(`heading`,` {0,3}#{1,6}(?:\\s|$)`).replace(`blockquote`,` {0,3}>`).replace(`code`,`(?: {4}| {0,3}	)[^\\n]`).replace(`fences`," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace(`list`,` {0,3}(?:[*+-]|1[.)])[ \\t]`).replace(`html`,`</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)`).replace(`tag`,v).getRegex(),ae={...x,lheading:ee,table:S,paragraph:a(g).replace(`hr`,d).replace(`heading`,` {0,3}#{1,6}(?:\\s|$)`).replace(`|lheading`,``).replace(`table`,S).replace(`blockquote`,` {0,3}>`).replace(`fences`," {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace(`list`,` {0,3}(?:[*+-]|1[.)])[ \\t]`).replace(`html`,`</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)`).replace(`tag`,v).getRegex()},oe={...x,html:a(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace(`comment`,y).replace(/tag/g,`(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b`).getRegex(),def:/^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,heading:/^(#{1,6})(.*)(?:\n+|$)/,fences:i,lheading:/^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/,paragraph:a(g).replace(`hr`,d).replace(`heading`,` *#{1,6} *[^
 ]`).replace(`lheading`,h).replace(`|table`,``).replace(`blockquote`,` {0,3}>`).replace(`|fences`,``).replace(`|list`,``).replace(`|html`,``).replace(`|tag`,``).getRegex()},se=/^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,ce=/^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,C=/^( {2,}|\\)\n(?!\s*$)/,le=/^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/,w=/[\p{P}\p{S}]/u,T=/[\s\p{P}\p{S}]/u,E=/[^\s\p{P}\p{S}]/u,ue=a(/^((?![*_])punctSpace)/,`u`).replace(/punctSpace/g,T).getRegex(),D=/(?!~)[\p{P}\p{S}]/u,de=/(?!~)[\s\p{P}\p{S}]/u,fe=/(?:[^\s\p{P}\p{S}]|~)/u,pe=a(/link|precode-code|html/,`g`).replace(`link`,/\[(?:[^\[\]`]|(?<a>`+)[^`]+\k<a>(?!`))*?\]\((?:\\[\s\S]|[^\\\(\)]|\((?:\\[\s\S]|[^\\\(\)])*\))*\)/).replace(`precode-`,o?"(?<!`)()":"(^^|[^`])").replace(`code`,/(?<b>`+)[^`]+\k<b>(?!`)/).replace(`html`,/<(?! )[^<>]*?>/).getRegex(),O=/^(?:\*+(?:((?!\*)punct)|([^\s*]))?)|^_+(?:((?!_)punct)|([^\s_]))?/,me=a(O,`u`).replace(/punct/g,w).getRegex(),he=a(O,`u`).replace(/punct/g,D).getRegex(),k=`^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)punct(\\*+)(?=[\\s]|$)|notPunctSpace(\\*+)(?!\\*)(?=punctSpace|$)|(?!\\*)punctSpace(\\*+)(?=notPunctSpace)|[\\s](\\*+)(?!\\*)(?=punct)|(?!\\*)punct(\\*+)(?!\\*)(?=punct)|notPunctSpace(\\*+)(?=notPunctSpace)`,ge=a(k,`gu`).replace(/notPunctSpace/g,E).replace(/punctSpace/g,T).replace(/punct/g,w).getRegex(),A=a(k,`gu`).replace(/notPunctSpace/g,fe).replace(/punctSpace/g,de).replace(/punct/g,D).getRegex(),_e=a(`^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)punct(_+)(?=[\\s]|$)|notPunctSpace(_+)(?!_)(?=punctSpace|$)|(?!_)punctSpace(_+)(?=notPunctSpace)|[\\s](_+)(?!_)(?=punct)|(?!_)punct(_+)(?!_)(?=punct)`,`gu`).replace(/notPunctSpace/g,E).replace(/punctSpace/g,T).replace(/punct/g,w).getRegex(),ve=a(/^~~?(?:((?!~)punct)|[^\s~])/,`u`).replace(/punct/g,w).getRegex(),ye=a(`^[^~]+(?=[^~])|(?!~)punct(~~?)(?=[\\s]|$)|notPunctSpace(~~?)(?!~)(?=punctSpace|$)|(?!~)punctSpace(~~?)(?=notPunctSpace)|[\\s](~~?)(?!~)(?=punct)|(?!~)punct(~~?)(?!~)(?=punct)|notPunctSpace(~~?)(?=notPunctSpace)`,`gu`).replace(/notPunctSpace/g,E).replace(/punctSpace/g,T).replace(/punct/g,w).getRegex(),be=a(/\\(punct)/,`gu`).replace(/punct/g,w).getRegex(),xe=a(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace(`scheme`,/[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace(`email`,/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex(),j=a(y).replace(`(?:-->|$)`,`-->`).getRegex(),Se=a(`^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>`).replace(`comment`,j).replace(`attribute`,/\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex(),M=/(?:\[(?:\\[\s\S]|[^\[\]\\])*\]|\\[\s\S]|`+(?!`)[^`]*?`+(?!`)|``+(?=\])|[^\[\]\\`])*?/,Ce=a(/^!?\[(label)\]\(\s*(href)(?:(?:[ \t]+(?:\n[ \t]*)?|\n[ \t]*)(title))?\s*\)/).replace(`label`,M).replace(`href`,/<(?:\\.|[^\n<>\\])+>|[^ \t\n\x00-\x1f]*/).replace(`title`,/"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex(),N=a(/^!?\[(label)\]\[(ref)\]/).replace(`label`,M).replace(`ref`,_).getRegex(),P=a(/^!?\[(ref)\](?:\[\])?/).replace(`ref`,_).getRegex(),we=a(`reflink|nolink(?!\\()`,`g`).replace(`reflink`,N).replace(`nolink`,P).getRegex(),F=/[hH][tT][tT][pP][sS]?|[fF][tT][pP]/,I={_backpedal:i,anyPunctuation:be,autolink:xe,blockSkip:pe,br:C,code:ce,del:i,delLDelim:i,delRDelim:i,emStrongLDelim:me,emStrongRDelimAst:ge,emStrongRDelimUnd:_e,escape:se,link:Ce,nolink:P,punctuation:ue,reflink:N,reflinkSearch:we,tag:Se,text:le,url:i},Te={...I,link:a(/^!?\[(label)\]\((.*?)\)/).replace(`label`,M).getRegex(),reflink:a(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace(`label`,M).getRegex()},L={...I,emStrongRDelimAst:A,emStrongLDelim:he,delLDelim:ve,delRDelim:ye,url:a(/^((?:protocol):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/).replace(`protocol`,F).replace(`email`,/[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(),_backpedal:/(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/,del:/^(~~?)(?=[^\s~])((?:\\[\s\S]|[^\\])*?(?:\\[\s\S]|[^\s~\\]))\1(?=[^~]|$)/,text:a(/^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|protocol:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/).replace(`protocol`,F).getRegex()},Ee={...L,br:a(C).replace(`{2,}`,`*`).getRegex(),text:a(L.text).replace(`\\b_`,`\\b_| {2,}\\n`).replace(/\{2,\}/g,`*`).getRegex()},R={normal:x,gfm:ae,pedantic:oe},z={normal:I,gfm:L,breaks:Ee,pedantic:Te},De={"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`},B=e=>De[e];function V(e,t){if(t){if(s.escapeTest.test(e))return e.replace(s.escapeReplace,B)}else if(s.escapeTestNoEncode.test(e))return e.replace(s.escapeReplaceNoEncode,B);return e}function H(e){try{e=encodeURI(e).replace(s.percentDecode,`%`)}catch{return null}return e}function U(e,t){let n=e.replace(s.findPipe,(e,t,n)=>{let r=!1,i=t;for(;--i>=0&&n[i]===`\\`;)r=!r;return r?`|`:` |`}).split(s.splitPipe),r=0;if(n[0].trim()||n.shift(),n.length>0&&!n.at(-1)?.trim()&&n.pop(),t)if(n.length>t)n.splice(t);else for(;n.length<t;)n.push(``);for(;r<n.length;r++)n[r]=n[r].trim().replace(s.slashPipe,`|`);return n}function W(e,t,n){let r=e.length;if(r===0)return``;let i=0;for(;i<r;){let a=e.charAt(r-i-1);if(a===t&&!n)i++;else if(a!==t&&n)i++;else break}return e.slice(0,r-i)}function Oe(e,t){if(e.indexOf(t[1])===-1)return-1;let n=0;for(let r=0;r<e.length;r++)if(e[r]===`\\`)r++;else if(e[r]===t[0])n++;else if(e[r]===t[1]&&(n--,n<0))return r;return n>0?-2:-1}function ke(e,t=0){let n=t,r=``;for(let t of e)if(t===`	`){let e=4-n%4;r+=` `.repeat(e),n+=e}else r+=t,n++;return r}function G(e,t,n,r,i){let a=t.href,o=t.title||null,s=e[1].replace(i.other.outputLinkReplace,`$1`);r.state.inLink=!0;let c={type:e[0].charAt(0)===`!`?`image`:`link`,raw:n,href:a,title:o,text:s,tokens:r.inlineTokens(s)};return r.state.inLink=!1,c}function Ae(e,t,n){let r=e.match(n.other.indentCodeCompensation);if(r===null)return t;let i=r[1];return t.split(`
 `).map(e=>{let t=e.match(n.other.beginningSpace);if(t===null)return e;let[r]=t;return r.length>=i.length?e.slice(i.length):e}).join(`
