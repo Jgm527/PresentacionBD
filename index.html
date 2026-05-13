@@ -606,9 +606,9 @@
     <div class="reveal">
         <div class="slides">
 
-            <!-- ╔══════════════════════════════╗
-                 ║  01 · PORTADA — A (15s)     ║
-                 ╚══════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  01 · PORTADA — A (15s)            ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:340px;height:340px;top:-40px;left:120px;opacity:.55;"></div>
                 <div class="float-blob" style="width:200px;height:200px;bottom:100px;right:100px;opacity:.45;"></div>
@@ -630,9 +630,9 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════╗
-                 ║  02 · CONTEXTO — A (40s)    ║
-                 ╚══════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  02 · CONTEXTO — A (40s)           ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:260px;height:260px;bottom:20px;right:780px;opacity:.4;"></div>
                 <div class="corner-label puzzle-br">Contexto</div>
@@ -684,9 +684,9 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════════╗
-                 ║  03 · MODELO — CAPA 1 (A, 45s) ║
-                 ╚══════════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  03 · MODELO — CAPA 1 (A, 45s)     ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <!-- <div class="float-blob" style="width:220px;height:220px;top:5px;left:100px;opacity:.4;"></div> -->
                 <div class="corner-label puzzle-tr">Capa 1 / 3</div>
@@ -710,9 +710,9 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════════╗
-                 ║  04 · MODELO — CAPA 2 (B, 45s) ║
-                 ╚══════════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  04 · MODELO — CAPA 2 (B, 45s)     ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <!-- <div class="float-blob" style="width:240px;height:240px;bottom:-25px;left:120px;opacity:.4;"></div> -->
                 <div class="corner-label puzzle-br">Capa 2 / 3</div>
@@ -736,9 +736,9 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════════╗
-                 ║  05 · MODELO — CAPA 3 (A, 45s) ║
-                 ╚══════════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  05 · MODELO — CAPA 3 (A, 45s)     ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <!-- <div class="float-blob" style="width:200px;height:200px;top:60px;left:140px;opacity:.4;"></div> -->
                 <div class="corner-label puzzle-tl">Capa 3 / 3</div>
@@ -762,9 +762,9 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════╗
-                 ║  06 · DECISIONES (B, 1:00) ║
-                 ╚══════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  06 · DECISIONES (B, 1:00)         ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:400px;height:400px;top:-100px;right:525px;opacity:.4;"></div>
                 <div class="corner-label puzzle-tr">Decisiones de diseño</div>
@@ -807,57 +807,173 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════╗
-                 ║  07 · AUTOMATISMOS (A, 45s)║
-                 ╚══════════════════════════════╝ -->
+
+
+<!-- ╔════════════════════════════════════╗
+     ║  07 · FUNCIONES — informe_cliente  ║
+     ╚════════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:280px;height:280px;top:20px;right:60px;opacity:.4;"></div>
+                <div class="corner-label puzzle-tr">Funciones</div>
+                <div style="width:1100px;display:flex;flex-direction:column;gap:16px;">
+                    <div class="neu-card puzzle-tl" data-trigger="6" style="display:flex;flex-direction:column;gap:12px;cursor:pointer;">
+                        <span class="lbl" style="font-size:.55em;">informe_cliente(dni)</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                            Historial completo<br>de un pasajero
+                        </h3>
+                        <p class="bod" style="margin:0;">
+                            Valida el DNI, recorre todos sus billetes con un bucle <strong>FOR...LOOP</strong>,
+                            calcula el gasto total con <strong>SUM(precio)</strong> y busca el próximo vuelo futuro.
+                            Devuelve <strong>SETOF TEXT</strong> con <strong>RETURN NEXT</strong>.
+                        </p>
+                        <div style="font-family:'Fira Code',monospace;font-size:.45em;color:var(--text-primary);background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
+┌────────────────────────────────────────────────────────────┐
+│ SELECT informe_cliente('58172362J');                       │
+├────────────────────────────────────────────────────────────┤
+│ LONDRES - BUSINESS - 450.00€                              │
+│ PARÍS - ECONOMY - 200.00€                                 │
+│ NUEVA YORK - FIRST - 1,200.00€                            │
+│ Total: 1,850.00€                                          │
+│ Próximo vuelo: 2026-06-15 10:30                           │
+└────────────────────────────────────────────────────────────┘</div>
+                    </div>
+                </div>
+            </section>
+
+<!-- ╔════════════════════════════════════╗
+     ║  08 · FUNCIONES — conectividad     ║
+     ╚════════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:240px;height:240px;bottom:20px;left:520px;opacity:.4;"></div>
+                <div class="corner-label puzzle-bl">Funciones</div>
+                <div style="width:1100px;display:flex;flex-direction:column;gap:16px;">
+                    <div class="neu-card puzzle-br" data-trigger="7" style="display:flex;flex-direction:column;gap:12px;cursor:pointer;">
+                        <span class="lbl" style="font-size:.55em;">conectividad_aeropuerto(id)</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                            ¿Qué tal conectado<br>está un aeropuerto?
+                        </h3>
+                        <p class="bod" style="margin:0;">
+                            Cuenta rutas totales (origen+destino), aerolíneas con hub allí, y evalúa si está
+                            <strong>bien conectado</strong> según umbrales por tipo: REGIONAL ≥2, NACIONAL ≥5, INTERNACIONAL ≥7.
+                            Usa <strong>SELECT...INTO</strong> y condicionales <strong>IF/THEN/ELSE</strong>.
+                        </p>
+                        <div style="font-family:'Fira Code',monospace;font-size:.45em;color:var(--text-primary);background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
+┌────────────────────────────────────────────────────────────┐
+│ SELECT conectividad_aeropuerto(8);                        │
+├────────────────────────────────────────────────────────────┤
+│ Total de rutas de Madrid-Barajas: 14                      │
+│ Cantidad de aerolíneas operando allí: 3                   │
+│ El aeropuerto está bien conectado                         │
+└────────────────────────────────────────────────────────────┘</div>
+                    </div>
+                </div>
+            </section>
+
+<!-- ╔════════════════════════════════════╗
+     ║  09 · PROCEDIMIENTO                ║
+     ╚════════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:320px;height:320px;top:-40px;left:200px;opacity:.45;"></div>
+                <div class="corner-label puzzle-tr">Procedimientos</div>
+                <div style="width:1100px;display:flex;flex-direction:column;gap:16px;">
+                    <div class="neu-card puzzle-tl" data-trigger="8" style="display:flex;flex-direction:column;gap:12px;cursor:pointer;">
+                        <span class="lbl" style="font-size:.55em;">reasignarEmpleadosAerolinea(origen, destino)</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                            Transferencia masiva<br>de personal
+                        </h3>
+                        <p class="bod" style="margin:0;">
+                            Itera fila a fila con <strong>FOR...LOOP</strong> transfiriendo empleados de una aerolínea a otra.
+                            Valida que el destino existe con <strong>RAISE EXCEPTION</strong> y reporta cada transferencia
+                            con <strong>RAISE NOTICE</strong>. Se ejecuta con <strong>CALL</strong>, no SELECT.
+                        </p>
+                        <div style="display:flex;gap:12px;font-family:'Fira Code',monospace;font-size:.45em;">
+                            <div style="flex:1;background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
+┌──────────────────────────────┐
+│ ANTES                       │
+├──────────────┬───────────────┤
+│ Iberia (id2) │ 25 empleados  │
+│ Vueling (id3)│ 18 empleados  │
+└──────────────┴───────────────┘</div>
+                            <div style="flex:1;background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
+┌──────────────────────────────┐
+│ DESPUÉS                     │
+├──────────────┬───────────────┤
+│ Iberia (id2) │ 0 empleados   │
+│ Vueling (id3)│ 43 empleados  │
+└──────────────┴───────────────┘
+NOTICE: Empleado 201 transferido a aerolínea 3
+NOTICE: Empleado 202 transferido a aerolínea 3
+NOTICE: Empleado ...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+<!-- ╔════════════════════════════════════╗
+     ║  10 · AUTOMATISMOS (A, 1:30)       ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:340px;height:340px;bottom:20px;left:320px;opacity:.4;"></div>
                 <div class="corner-label puzzle-bl">Automatismos</div>
                 <div style="display:flex;gap:18px;width:1100px;align-items:stretch;">
 
-                    <!-- Card 1: Trigger horas -->
-                    <div class="neu-card puzzle-tl" data-trigger="1" title="Click para ver código SQL" style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                    <!-- Card 1: Trigger horas (código + resultado) -->
+                    <div class="neu-card puzzle-tl" data-trigger="1" title="Click para ver el código SQL" style="flex:1;display:flex;flex-direction:column;gap:8px;">
                         <span class="lbl" style="font-size:.55em;">Trigger post-vuelo</span>
                         <div class="accent-line" style="margin:0;"></div>
-                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                        <h3 style="font-size:1em;margin:0;line-height:1.3;">
                             Horas acumuladas<br>sin intervención
                         </h3>
-                        <p class="bod" style="margin:0;">
-                            Al finalizar un vuelo, un trigger <strong>AFTER UPDATE</strong> suma
+                        <p class="bod" style="margin:0;font-size:.85em;">
+                            Al finalizar un vuelo (<strong>AFTER UPDATE</strong>), suma
                             automáticamente las horas de vuelo a cada tripulante.
                         </p>
-                        <p style="font-family:'Fira Code',monospace;font-size:.55em;color:var(--text-secondary);margin:0;line-height:1.5;">
-                            UPDATE empleados_aire<br>
-                            SET horas_realizadas = horas_realizadas + duracion<br>
-                            FROM vuelos WHERE NEW.estado = 'FINALIZADO'
-                        </p>
+                        <div style="font-family:'Fira Code',monospace;font-size:.42em;color:var(--text-primary);background:var(--card-bg);border-radius:8px;padding:8px 10px;box-shadow:inset 3px 3px 6px var(--neu-shadow-dark),inset -3px -3px 6px var(--neu-shadow-light);line-height:1.5;white-space:pre;overflow-x:auto;">
+UPDATE vuelos SET estado = 'FINALIZADO' WHERE idvuelo = 162
+
+┌─────────────────────┬─────────────┐    ┌─────────────────────┬─────────────┐
+│ horas_vuelo ANTES   │             │    │ horas_vuelo DESPUÉS │             │
+├─────────────────────┼─────────────┤    ├─────────────────────┼─────────────┤
+│ id=201 (Capitán)    │ 1,250h      │    │ id=201 (Capitán)    │ 1,258.5h    │
+│ id=202 (Oficial)    │ 980h        │    │ id=202 (Oficial)    │ 988.5h      │
+│ id=203 (AZAFAT@)    │ 720h        │    │ id=203 (AZAFAT@)    │ 728.5h      │
+└─────────────────────┴─────────────┘    └─────────────────────┴─────────────┘</div>
                     </div>
 
-                    <!-- Card 2: Trigger cancelación -->
-                    <div class="neu-card puzzle-br" data-trigger="2" title="Click para ver código SQL" style="flex:1;display:flex;flex-direction:column;gap:12px;">
+                    <!-- Card 2: Trigger cancelación (código + resultado) -->
+                    <div class="neu-card puzzle-br" data-trigger="2" title="Click para ver código SQL" style="flex:1;display:flex;flex-direction:column;gap:8px;">
                         <span class="lbl" style="font-size:.55em;">Trigger cancelación</span>
                         <div class="accent-line" style="margin:0;"></div>
-                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                        <h3 style="font-size:1em;margin:0;line-height:1.3;">
                             Reembolso masivo<br>en cascada
                         </h3>
-                        <p class="bod" style="margin:0;">
+                        <p class="bod" style="margin:0;font-size:.85em;">
                             Al cancelar un vuelo, todos sus billetes pasan a
-                            <strong>REEMBOLSADO</strong> sin que la aplicación mueva un dedo.
+                            <strong>REEMBOLSADO</strong> sin intervención manual.
                         </p>
-                        <p style="font-family:'Fira Code',monospace;font-size:.55em;color:var(--text-secondary);margin:0;line-height:1.5;">
-                            UPDATE billetes<br>
-                            SET estado = 'REEMBOLSADO'<br>
-                            WHERE idvuelo = NEW.idvuelo<br>
-                            AND estado = 'VIGENTE'
-                        </p>
+                        <div style="font-family:'Fira Code',monospace;font-size:.42em;color:var(--text-primary);background:var(--card-bg);border-radius:8px;padding:8px 10px;box-shadow:inset 3px 3px 6px var(--neu-shadow-dark),inset -3px -3px 6px var(--neu-shadow-light);line-height:1.5;white-space:pre;overflow-x:auto;">
+UPDATE vuelos SET estado = 'CANCELADO' WHERE idvuelo = 1
+
+┌──────────┬──────────────┐    ┌──────────┬──────────────┐
+│ Billete  │ Estado ANTES │    │ Billete  │ Estado DESP  │
+├──────────┼──────────────┤    ├──────────┼──────────────┤
+│ id=1     │ VIGENTE      │    │ id=1     │ REEMBOLSADO  │
+│ id=2     │ VIGENTE      │    │ id=2     │ REEMBOLSADO  │
+│ id=3     │ VIGENTE      │    │ id=3     │ REEMBOLSADO  │
+│ id=4     │ VIGENTE      │    │ id=4     │ REEMBOLSADO  │
+│ id=5     │ VIGENTE      │    │ id=5     │ REEMBOLSADO  │
+└──────────┴──────────────┘    └──────────┴──────────────┘</div>
                     </div>
 
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════╗
-                 ║  08 · CIERRE — B (15s)     ║
-                 ╚══════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  11 · CIERRE — B (15s)             ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:350px;height:350px;top:-40px;right:240px;opacity:.5;"></div>
                 <div class="float-blob" style="width:200px;height:200px;bottom:90px;left:240px;opacity:.4;"></div>
@@ -880,9 +996,9 @@
                 </div>
             </section>
 
-            <!-- ╔══════════════════════════════╗
-                 ║  09 · ¿PREGUNTAS?           ║
-                 ╚══════════════════════════════╝ -->
+<!-- ╔════════════════════════════════════╗
+     ║  12 · ¿PREGUNTAS?                  ║
+     ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:450px;height:450px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.35;"></div>
                 <h1 style="font-size:3.5em;margin:0;position:relative;z-index:1;font-family:'Space Mono',monospace;">
@@ -892,6 +1008,8 @@
                     Javier Guisande &amp; Enrique Caballero
                 </p>
             </section>
+
+
 
         </div>
     </div>
@@ -1037,14 +1155,16 @@
             var sqlClose = sqlOverlay.querySelector('.sql-close');
 
             // Trigger SQL code
-            var triggerSQL = {
+                                    var triggerSQL = {
                 '1': '/* TRIGGER 1 — Sumar horas a empleados tras finalizar vuelo */\n\nCREATE OR REPLACE FUNCTION fn_sumar_horas_empleados()\nRETURNS TRIGGER AS $$\n\nBEGIN\n\n    IF NEW.estado = \'FINALIZADO\' AND OLD.estado <> \'FINALIZADO\' THEN\n        \n        UPDATE empleados_aire\n        SET horas_vuelo = horas_vuelo + EXTRACT(EPOCH FROM NEW.duracion_real)/3600\n        WHERE idempleado IN (\n            SELECT idempleado\n            FROM tripulaciones\n            WHERE idvuelo = NEW.idvuelo\n        );\n    \n    END IF;\n\n    RETURN NEW;\n\nEND $$ LANGUAGE plpgsql;\n\n\nCREATE OR REPLACE TRIGGER TG_sumar_horas_empleados\nAFTER UPDATE ON vuelos\nFOR EACH ROW\nEXECUTE FUNCTION fn_sumar_horas_empleados();',
                 '2': '/* TRIGGER 2 — Cancelación automática de billetes */\n\nCREATE OR REPLACE FUNCTION fn_cancelar_billetes()\nRETURNS TRIGGER AS $$\n\nBEGIN\n    IF NEW.estado = \'CANCELADO\' AND OLD.estado <> \'CANCELADO\' THEN\n        \n        UPDATE billetes\n        SET estado = \'REEMBOLSADO\'\n        WHERE idvuelo = NEW.idvuelo;\n    \n    END IF;\n\n    RETURN NEW;\n\nEND $$ LANGUAGE plpgsql;\n\n\nCREATE OR REPLACE TRIGGER TG_cancelar_billetes\nAFTER UPDATE ON vuelos\nFOR EACH ROW\nEXECUTE FUNCTION fn_cancelar_billetes();',
                 '3': '-- TABLE_PER_CLASS: persona NO existe como tabla. Sus atributos\n-- se replican directamente en clientes y empleados.\n\nCREATE TABLE clientes (\n    idcliente SERIAL PRIMARY KEY,\n    nombre VARCHAR(40) NOT NULL,\n    apellidos VARCHAR(70) NOT NULL,\n    telefono VARCHAR(18) NOT NULL,\n    email VARCHAR(60) NOT NULL,\n    fecha_nacimiento DATE NOT NULL,\n    dni VARCHAR(18) NOT NULL UNIQUE,\n    pasaporte VARCHAR(10)\n);\n\nCREATE TABLE empleados (\n    idempleado SERIAL PRIMARY KEY,\n    idaerolinea INT REFERENCES aerolineas(idaerolinea),\n    nombre VARCHAR(40) NOT NULL,\n    apellidos VARCHAR(70) NOT NULL,\n    telefono VARCHAR(18) NOT NULL,\n    email VARCHAR(60) NOT NULL,\n    fecha_nacimiento DATE NOT NULL,\n    cuenta_bancaria CHAR(24) NOT NULL,\n    fecha_contratacion DATE NOT NULL,\n    formacion TEXT NOT NULL\n);\n\n-- JOINED: empleados_aire usa la PK de empleados como FK y PK\n\nCREATE TABLE empleados_aire (\n    idempleado INT PRIMARY KEY REFERENCES empleados(idempleado) ON DELETE CASCADE,\n    puesto enum_puesto NOT NULL,\n    licencia_necesaria TEXT NOT NULL,\n    horas_minimas INT NOT NULL,\n    horas_vuelo INT NOT NULL,\n    descripcion TEXT\n);',
                 '4': 'ALTER TABLE vuelos\nADD COLUMN duracion_real INTERVAL\nGENERATED ALWAYS AS (fecha_llegada - fecha_salida) STORED;',
-                '5': 'ALTER TABLE vuelos\nALTER COLUMN idavion DROP NOT NULL,\nDROP CONSTRAINT vuelos_idavion_fkey,\nADD CONSTRAINT vuelos_idavion_fkey\nFOREIGN KEY (idavion)\nREFERENCES aviones(idavion) ON DELETE SET NULL;'
+                '5': 'ALTER TABLE vuelos\nALTER COLUMN idavion DROP NOT NULL,\nDROP CONSTRAINT vuelos_idavion_fkey,\nADD CONSTRAINT vuelos_idavion_fkey\nFOREIGN KEY (idavion)\nREFERENCES aviones(idavion) ON DELETE SET NULL;',
+                '6': '/* FUNCTION — informe_cliente(dni) */\n\nCREATE OR REPLACE FUNCTION informe_cliente(CL_dni TEXT)\nRETURNS SETOF TEXT AS $$\nDECLARE\n    info TEXT;\n    total MONEY;\n    fecha_vuelo TIMESTAMP;\nBEGIN\n    IF NOT EXISTS (\n        SELECT 1 FROM clientes c WHERE c.dni = CL_dni\n    ) THEN\n        RAISE EXCEPTION \'Cliente no encontrado\';\n        RETURN;\n    END IF;\n    FOR info IN\n        SELECT r.nombre || \' - \' || b.clase || \' - \' || b.precio\n        FROM clientes c\n            JOIN billetes b ON (c.idcliente = b.idcliente)\n            JOIN vuelos v ON (b.idvuelo = v.idvuelo)\n            JOIN rutas r ON (v.idruta = r.idruta)\n        WHERE c.dni = CL_dni\n    LOOP\n        RETURN NEXT info;\n    END LOOP;\n    SELECT SUM(b.precio) INTO total\n    FROM clientes c\n        JOIN billetes b ON (c.idcliente = b.idcliente)\n    WHERE c.dni = CL_dni;\n    RETURN NEXT \'Total: \' || total;\n    SELECT v.fecha_salida INTO fecha_vuelo\n    FROM clientes c\n        JOIN billetes b ON (c.idcliente = b.idcliente)\n        JOIN vuelos v ON (b.idvuelo = v.idvuelo)\n    WHERE c.dni = CL_dni AND v.fecha_salida > CURRENT_DATE\n    ORDER BY v.fecha_salida ASC\n    LIMIT 1;\n    IF NOT FOUND THEN\n        RETURN NEXT \'No hay vuelos próximos\';\n    ELSE\n        RETURN NEXT \'Próximo vuelo: \' || fecha_vuelo;\n    END IF;\nEND $$ LANGUAGE plpgsql;',
+                '7': '/* FUNCTION — conectividad_aeropuerto(id) */\n\nCREATE OR REPLACE FUNCTION conectividad_aeropuerto(codigoAEROPUERTO INT)\nRETURNS SETOF TEXT AS $$\nDECLARE\n    totalRutas INT;\n    nombreAeropuerto TEXT;\n    aerolHub INT;\n    tiposAE enum_tipoaeropuerto;\nBEGIN\n    SELECT nombre, tipoaeropuerto INTO nombreAeropuerto, tiposAE\n    FROM aeropuertos\n    WHERE idaeropuerto = codigoAEROPUERTO;\n    IF NOT FOUND THEN\n        RAISE EXCEPTION \'Aeropuerto no encontrado\';\n        RETURN;\n    END IF;\n    SELECT COUNT(*) INTO totalRutas\n    FROM rutas\n    WHERE idorigen = codigoAEROPUERTO\n       OR iddestino = codigoAEROPUERTO;\n    RETURN NEXT \'Total de rutas de \' || nombreAeropuerto || \' : \' || totalRutas;\n    SELECT COUNT(*) INTO aerolHub\n    FROM aerolineas\n    WHERE hubprincipal = codigoAEROPUERTO;\n    RETURN NEXT \'Cantidad de aerolíneas operando allí: \' || aerolHub;\n    IF (tiposAE = \'REGIONAL\' AND totalRutas >= 2) OR\n       (tiposAE = \'NACIONAL\' AND totalRutas >= 5) OR\n       (tiposAE = \'INTERNACIONAL\' AND totalRutas >= 7) THEN\n        RETURN NEXT \'El aeropuerto está bien conectado\';\n    ELSE\n        RETURN NEXT \'El aeropuerto NO está bien conectado\';\n    END IF;\nEND $$ LANGUAGE plpgsql;',
+                '8': '/* PROCEDURE — reasignarEmpleadosAerolinea */\n\nCREATE OR REPLACE PROCEDURE reasignarEmpleadosAerolinea(\n    id_origen INT, id_destino INT\n)\nAS $$\nDECLARE\n    empleadoID INT;\nBEGIN\n    IF NOT EXISTS (\n        SELECT 1 FROM aerolineas WHERE idaerolinea = id_destino\n    ) THEN\n        RAISE EXCEPTION \'La aerolínea destino con id % no existe\', id_destino;\n    END IF;\n    FOR empleadoID IN\n        SELECT idempleado FROM empleados WHERE idaerolinea = id_origen\n    LOOP\n        UPDATE empleados\n        SET idaerolinea = id_destino\n        WHERE idempleado = empleadoID;\n        RAISE NOTICE \'Empleado % transferido a aerolínea %\', empleadoID, id_destino;\n    END LOOP;\nEND $$ LANGUAGE plpgsql;\n\n-- Ejecución de prueba:\nBEGIN;\nCALL reasignarEmpleadosAerolinea(2, 3);\nROLLBACK;'
             };
-
             function openSqlModal(id) {
                 sqlCode.textContent = triggerSQL[id] || '';
                 sqlCode.removeAttribute('data-highlighted');
