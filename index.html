@@ -827,16 +827,7 @@
                             calcula el gasto total con <strong>SUM(precio)</strong> y busca el próximo vuelo futuro.
                             Devuelve <strong>SETOF TEXT</strong> con <strong>RETURN NEXT</strong>.
                         </p>
-                        <div style="font-family:'Fira Code',monospace;font-size:.45em;color:var(--text-primary);background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
-┌────────────────────────────────────────────────────────────┐
-│ SELECT informe_cliente('58172362J');                       │
-├────────────────────────────────────────────────────────────┤
-│ LONDRES - BUSINESS - 450.00€                              │
-│ PARÍS - ECONOMY - 200.00€                                 │
-│ NUEVA YORK - FIRST - 1,200.00€                            │
-│ Total: 1,850.00€                                          │
-│ Próximo vuelo: 2026-06-15 10:30                           │
-└────────────────────────────────────────────────────────────┘</div>
+                        <img src="src/Function1.png" alt="Resultado de informe_cliente" style="max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);">
                     </div>
                 </div>
             </section>
@@ -859,14 +850,7 @@
                             <strong>bien conectado</strong> según umbrales por tipo: REGIONAL ≥2, NACIONAL ≥5, INTERNACIONAL ≥7.
                             Usa <strong>SELECT...INTO</strong> y condicionales <strong>IF/THEN/ELSE</strong>.
                         </p>
-                        <div style="font-family:'Fira Code',monospace;font-size:.45em;color:var(--text-primary);background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
-┌────────────────────────────────────────────────────────────┐
-│ SELECT conectividad_aeropuerto(8);                        │
-├────────────────────────────────────────────────────────────┤
-│ Total de rutas de Madrid-Barajas: 14                      │
-│ Cantidad de aerolíneas operando allí: 3                   │
-│ El aeropuerto está bien conectado                         │
-└────────────────────────────────────────────────────────────┘</div>
+                        <img src="src/Function2.png" alt="Resultado de conectividad_aeropuerto" style="max-width:100%;max-height:180px;object-fit:contain;border-radius:10px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);">
                     </div>
                 </div>
             </section>
@@ -889,25 +873,7 @@
                             Valida que el destino existe con <strong>RAISE EXCEPTION</strong> y reporta cada transferencia
                             con <strong>RAISE NOTICE</strong>. Se ejecuta con <strong>CALL</strong>, no SELECT.
                         </p>
-                        <div style="display:flex;gap:12px;font-family:'Fira Code',monospace;font-size:.45em;">
-                            <div style="flex:1;background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
-┌──────────────────────────────┐
-│ ANTES                       │
-├──────────────┬───────────────┤
-│ Iberia (id2) │ 25 empleados  │
-│ Vueling (id3)│ 18 empleados  │
-└──────────────┴───────────────┘</div>
-                            <div style="flex:1;background:var(--card-bg);border-radius:10px;padding:10px 14px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);line-height:1.55;white-space:pre;overflow-x:auto;">
-┌──────────────────────────────┐
-│ DESPUÉS                     │
-├──────────────┬───────────────┤
-│ Iberia (id2) │ 0 empleados   │
-│ Vueling (id3)│ 43 empleados  │
-└──────────────┴───────────────┘
-NOTICE: Empleado 201 transferido a aerolínea 3
-NOTICE: Empleado 202 transferido a aerolínea 3
-NOTICE: Empleado ...</div>
-                        </div>
+                        <img src="src/Procedure1.png" alt="Resultado de reasignarEmpleadosAerolinea" style="max-width:100%;max-height:200px;object-fit:contain;border-radius:10px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);">
                     </div>
                 </div>
             </section>
@@ -931,16 +897,10 @@ NOTICE: Empleado ...</div>
                             Al finalizar un vuelo (<strong>AFTER UPDATE</strong>), suma
                             automáticamente las horas de vuelo a cada tripulante.
                         </p>
-                        <div style="font-family:'Fira Code',monospace;font-size:.42em;color:var(--text-primary);background:var(--card-bg);border-radius:8px;padding:8px 10px;box-shadow:inset 3px 3px 6px var(--neu-shadow-dark),inset -3px -3px 6px var(--neu-shadow-light);line-height:1.5;white-space:pre;overflow-x:auto;">
-UPDATE vuelos SET estado = 'FINALIZADO' WHERE idvuelo = 162
-
-┌─────────────────────┬─────────────┐    ┌─────────────────────┬─────────────┐
-│ horas_vuelo ANTES   │             │    │ horas_vuelo DESPUÉS │             │
-├─────────────────────┼─────────────┤    ├─────────────────────┼─────────────┤
-│ id=201 (Capitán)    │ 1,250h      │    │ id=201 (Capitán)    │ 1,258.5h    │
-│ id=202 (Oficial)    │ 980h        │    │ id=202 (Oficial)    │ 988.5h      │
-│ id=203 (AZAFAT@)    │ 720h        │    │ id=203 (AZAFAT@)    │ 728.5h      │
-└─────────────────────┴─────────────┘    └─────────────────────┴─────────────┘</div>
+                        <div style="display:flex;gap:8px;border-radius:8px;padding:8px 10px;background:var(--card-bg);box-shadow:inset 3px 3px 6px var(--neu-shadow-dark),inset -3px -3px 6px var(--neu-shadow-light);flex-direction: column; align-items: center; flex: 1;">
+<img src="src/Trigger1_before.png" alt="Antes del trigger horas" style="flex:1;max-width:50%;object-fit:contain;border-radius:6px;">
+<img src="src/Trigger1_after.png" alt="Después del trigger horas" style="flex:1;max-width:50%;object-fit:contain;border-radius:6px;">
+</div>
                     </div>
 
                     <!-- Card 2: Trigger cancelación (código + resultado) -->
@@ -954,25 +914,51 @@ UPDATE vuelos SET estado = 'FINALIZADO' WHERE idvuelo = 162
                             Al cancelar un vuelo, todos sus billetes pasan a
                             <strong>REEMBOLSADO</strong> sin intervención manual.
                         </p>
-                        <div style="font-family:'Fira Code',monospace;font-size:.42em;color:var(--text-primary);background:var(--card-bg);border-radius:8px;padding:8px 10px;box-shadow:inset 3px 3px 6px var(--neu-shadow-dark),inset -3px -3px 6px var(--neu-shadow-light);line-height:1.5;white-space:pre;overflow-x:auto;">
-UPDATE vuelos SET estado = 'CANCELADO' WHERE idvuelo = 1
-
-┌──────────┬──────────────┐    ┌──────────┬──────────────┐
-│ Billete  │ Estado ANTES │    │ Billete  │ Estado DESP  │
-├──────────┼──────────────┤    ├──────────┼──────────────┤
-│ id=1     │ VIGENTE      │    │ id=1     │ REEMBOLSADO  │
-│ id=2     │ VIGENTE      │    │ id=2     │ REEMBOLSADO  │
-│ id=3     │ VIGENTE      │    │ id=3     │ REEMBOLSADO  │
-│ id=4     │ VIGENTE      │    │ id=4     │ REEMBOLSADO  │
-│ id=5     │ VIGENTE      │    │ id=5     │ REEMBOLSADO  │
-└──────────┴──────────────┘    └──────────┴──────────────┘</div>
+                        <div style="display:flex;gap:8px;border-radius:8px;padding:8px 10px;background:var(--card-bg);box-shadow:inset 3px 3px 6px var(--neu-shadow-dark),inset -3px -3px 6px var(--neu-shadow-light);">
+<img src="src/Trigger2_before.png" alt="Antes del trigger cancelación" style="flex:1;max-width:50%;object-fit:contain;border-radius:6px;">
+<img src="src/Trigger2_after.png" alt="Después del trigger cancelación" style="flex:1;max-width:50%;object-fit:contain;border-radius:6px;">
+</div>
                     </div>
 
                 </div>
             </section>
+<!-- ╔════════════════════════════════════╗
+     ║  11 · BACKUP (A, 30s)              ║
+     ╚════════════════════════════════════╝ -->
+            <section>
+                <div class="float-blob" style="width:280px;height:280px;top:20px;right:80px;opacity:.4;"></div>
+                <div class="corner-label puzzle-bl">Administración</div>
+                <div style="width:1000px;display:flex;flex-direction:column;gap:14px;">
+                    <div class="neu-card puzzle-tl" style="display:flex;flex-direction:column;gap:10px;">
+                        <span class="lbl" style="font-size:.55em;">pg_dump · Restauración</span>
+                        <div class="accent-line" style="margin:0;"></div>
+                        <h3 style="font-size:1.1em;margin:0;line-height:1.3;">
+                            Backup y restauración<br>de la base de datos
+                        </h3>
+                        <div style="display:flex;gap:16px;width:100%;">
+                            <div style="flex:1;background:var(--card-bg);border-radius:10px;padding:12px 16px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);font-family:'Fira Code',monospace;font-size:.5em;line-height:1.6;">
+                                <span style="color:var(--accent);font-weight:600;">Backup</span><br>
+                                pg_dump -U postgres -d AtlanticAirlines<br>
+                                &nbsp;&nbsp;-F p -f atlantic_airlines_backup.sql
+                            </div>
+                            <div style="flex:1;background:var(--card-bg);border-radius:10px;padding:12px 16px;box-shadow:inset 3px 3px 7px var(--neu-shadow-dark),inset -3px -3px 7px var(--neu-shadow-light);font-family:'Fira Code',monospace;font-size:.5em;line-height:1.6;">
+                                <span style="color:var(--accent);font-weight:600;">Restauración</span><br>
+                                psql -U postgres -d AtlanticAirlines<br>
+                                &nbsp;&nbsp;-f atlantic_airlines_backup.sql
+                            </div>
+                        </div>
+                        <p class="bod" style="margin:4px 0 0;font-size:.85em;">
+                            <strong>pg_dump</strong> genera un archivo SQL con todo el esquema y los datos.
+                            <strong>-F p</strong> = formato plain (legible). La restauración se hace con <strong>psql</strong>
+                            sobre la misma base de datos (vacía o existente).
+                        </p>
+                    </div>
+                </div>
+            </section>
+
 
 <!-- ╔════════════════════════════════════╗
-     ║  11 · CIERRE — B (15s)             ║
+     ║  12 · CIERRE — B (15s)             ║
      ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:350px;height:350px;top:-40px;right:240px;opacity:.5;"></div>
@@ -997,7 +983,7 @@ UPDATE vuelos SET estado = 'CANCELADO' WHERE idvuelo = 1
             </section>
 
 <!-- ╔════════════════════════════════════╗
-     ║  12 · ¿PREGUNTAS?                  ║
+     ║  13 · ¿PREGUNTAS?                  ║
      ╚════════════════════════════════════╝ -->
             <section>
                 <div class="float-blob" style="width:450px;height:450px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.35;"></div>
